@@ -1,0 +1,17 @@
+{
+  "name": "Show Social",
+  "short_name": "Show Social",
+  "theme_color": "#212529",
+  "background_color": "#F8F9FA",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/index.php",
+  "description": "Description",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/favicon/android-chrome-512x512.png",
+      "sizes": "512x512"
+    }
+  ]
+}
