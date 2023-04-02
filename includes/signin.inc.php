@@ -22,12 +22,12 @@ if (!empty($_POST)) {
             $_SESSION['user_name'] = $emailQuery['user_name'];
             $_SESSION['first_name'] = $emailQuery['first_name'];
             $_SESSION['last_name'] = $emailQuery['last_name'];
-            header('Location: ../authentication.php');
+            header('Location: ../profile.php');
             exit();
         }
     }
 
-    header('Location: authentication.php');
+    header('Location: ../authentication.php');
     exit();
 
     var_dump($emailQuery);

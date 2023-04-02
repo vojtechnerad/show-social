@@ -2,9 +2,10 @@
 /**
  * Page with details about selected show.
  */
-
-require 'includes/autoloader.inc.php';
+session_start();
+//require 'includes/autoloader.inc.php';
 require_once 'classes/TvShow.class.php';
+require_once 'includes/dbconn.inc.php';
 
 
 $tvShow = new TvShow($_GET['id']);
@@ -13,8 +14,23 @@ $tvShowData = $tvShow->getDataFromTmdb();
 $title = $tvShowData['name'];
 $active_page = 'shows';
 
-include 'includes/header.inc.php';
+if (@$_SESSION['user_id']) {
+    $seenStmnt = $db->prepare('
+            SELECT id
+            FROM seen_episodes
+            WHERE user_id = (:user_id);
+        ');
+    $seenStmnt->bindParam(':user_id',$_SESSION['user_id']);
+    $seenStmnt->execute();
+    $result = $seenStmnt->fetchAll();
 
+    $seenEpisodesArr = array();
+    foreach ($result as $object) {
+        array_push($seenEpisodesArr, $object['id']);
+    }
+}
+
+include 'includes/header.inc.php';
 ?>
 <div class="container-sm">
     <nav aria-label="breadcrumb">
@@ -83,7 +99,11 @@ foreach ($tvShowData['seasons'] as $season) {
         echo '<div>';
         echo '<li class="list-group-item">S' . $season->season_number . 'E' . $episode->episode_number . ' &ndash; ' . $episode->name;
         if ($_SESSION) {
-            echo '<button class="btn btn-secondary position-absolute top-0 end-0" onclick="markEpisodeAsSeen(' . $tvShowData['id'] . ', ' . $season->season_number . ', ' . $episode->episode_number . ')">Zapsat</button>'; //' . $tvShow . ', ' .$season->season_number .', ' . .'
+            if (in_array($episode->id, $seenEpisodesArr)) {
+                echo '<button class="btn btn-success position-absolute top-0 end-0" id="S' . $season->season_number . 'E' . $episode->episode_number . '" onclick="markEpisodeAsSeen(' . $tvShowData['id'] . ', ' . $season->season_number . ', ' . $episode->episode_number . ')">Zhlédnuto</button>';
+            } else {
+                echo '<button class="btn btn-secondary position-absolute top-0 end-0" id="S' . $season->season_number . 'E' . $episode->episode_number . '" onclick="markEpisodeAsSeen(' . $tvShowData['id'] . ', ' . $season->season_number . ', ' . $episode->episode_number . ')">Zapsat</button>';
+            }
         }
         echo '</li></div>';
     }
@@ -115,7 +135,19 @@ echo '</div>';
             })
         });
         const response = await request.json();
-        console.log(response);
+
+        if (response) {
+            const button = document.getElementById('S' + seasonNumber + 'E' + episodeNumber);
+
+            if (response['newSeenStatus']) {
+
+                button.innerText = 'Zhlédnuto';
+                button.classList = 'btn btn-success position-absolute top-0 end-0';
+            } else {
+                button.innerText = 'Zapsat';
+                button.classList = 'btn btn-secondary position-absolute top-0 end-0';
+            }
+        }
     }
 </script>
 <?php
