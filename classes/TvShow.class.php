@@ -32,4 +32,11 @@ class TvShow extends TmdbApi {
         $response_data = json_decode($json_data);
         return (array) $response_data;
     }
+
+    public function getEpisodeData($seasonNumber, $episodeNumber) {
+        $url = "{$this->base_url}/tv/{$this->tvShowId}/season/{$seasonNumber}/episode/{$episodeNumber}?{$this->api_key}&language=cs";
+        $json_data = file_get_contents($url);
+        $response_data = json_decode($json_data);
+        return (array) $response_data;
+    }
 }

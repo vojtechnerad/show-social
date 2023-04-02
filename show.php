@@ -80,7 +80,12 @@ foreach ($tvShowData['seasons'] as $season) {
     echo '<ul class="list-group">';
 
     foreach ($tvShowSeasonData['episodes'] as $episode) {
-        echo '<li class="list-group-item">S' . $season->season_number . 'E' . $episode->episode_number . ' &ndash; ' . $episode->name . '</li>';
+        echo '<div>';
+        echo '<li class="list-group-item">S' . $season->season_number . 'E' . $episode->episode_number . ' &ndash; ' . $episode->name;
+        if ($_SESSION) {
+            echo '<button class="btn btn-secondary position-absolute top-0 end-0" onclick="markEpisodeAsSeen(' . $tvShowData['id'] . ', ' . $season->season_number . ', ' . $episode->episode_number . ')">Zapsat</button>'; //' . $tvShow . ', ' .$season->season_number .', ' . .'
+        }
+        echo '</li></div>';
     }
 
     echo '</ul>';
@@ -94,6 +99,25 @@ echo '</div>';
 ?>
 </div>
 </div>
+
+<script>
+    async function markEpisodeAsSeen(showId, seasonNumber, episodeNumber) {
+        const request = await fetch("http://localhost/api/episode-change-status.php", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "showId": showId,
+                "seasonNumber": seasonNumber,
+                "episodeNumber": episodeNumber
+            })
+        });
+        const response = await request.json();
+        console.log(response);
+    }
+</script>
 <?php
 include 'includes/footer.inc.php';
 ?>
