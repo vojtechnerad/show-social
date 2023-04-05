@@ -4,6 +4,12 @@ require 'classes/dbh.class.php';
 require 'classes/user.class.php';
 
 session_start();
+
+if (!$_SESSION['user_id']) {
+    header('Location: authentication.php');
+    exit();
+}
+
 $title = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
 $active_page = 'profile';
 include 'includes/header.inc.php';
@@ -129,7 +135,7 @@ foreach ($lastSeenEpisodesData as $seenEpisode) {
     echo '<a href="show.php?id=' . $seenEpisode['show_id'] . '" class="stretched-link""></a>';
     $seenTime = date_create($seenEpisode['seen_time']);
     echo '</div>';
-    echo '<div class="card-footer text-body-secondary">';
+    echo '<div class="card-footer text-body-secon dary">';
     echo date_format($seenTime, 'd.m.Y H:i');
     echo '</div>';
     echo '</div>';
