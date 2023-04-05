@@ -67,9 +67,11 @@
                             FROM seen_episodes
                             LEFT JOIN tv_show_episodes
                             ON seen_episodes.id = tv_show_episodes.id
-                            WHERE seen_episodes.timestamp >= NOW() - INTERVAL 1 DAY;
+                            WHERE seen_episodes.timestamp >= NOW() - INTERVAL 1 DAY AND user_id = (:user_id);
                         ');
-                        $seenMinutesTodayStatement->execute();
+                        $seenMinutesTodayStatement->execute([
+                                ':user_id' => $_SESSION['user_id']
+                        ]);
                         $seenMinutesTodayData = $seenMinutesTodayStatement->fetchAll();
 
                         $seenMinutesInTotal = 0;
