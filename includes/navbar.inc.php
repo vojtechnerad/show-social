@@ -30,7 +30,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a <?php echo(($active_page == 'movie') ? $active_link_classes : $nonactive_link_classes); ?> href="movie.php"><i class="bi bi-camera-video-fill"></i> Filmy</a>
+                    <a <?php echo(($active_page == 'movie') ? $active_link_classes : $nonactive_link_classes); ?> href="movies.php"><i class="bi bi-camera-video-fill"></i> Filmy</a>
                 </li>
 
                 <li class="nav-item">

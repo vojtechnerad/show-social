@@ -1,9 +1,13 @@
 <?php
     require 'includes/autoloader.inc.php';
     require_once 'classes/Movie.php';
+    require_once 'classes/TmdbSearch.class.php';
+
+
     $title = 'Filmy';
     $active_page = 'movie';
     include 'includes/header.inc.php';
+    require_once 'includes/movie-search.inc.php';
 ?>
     <div class="row justify-content-start">
         <div class="col-1">
@@ -12,21 +16,6 @@
                     <li class="breadcrumb-item active" aria-current="page">Filmy</li>
                 </ol>
             </nav>
-        </div>
-        <div class="col">
-            <div class="container-sm">
-                <form action="#">
-                    <div class="mb-3">
-                        <label for="movie-search" class="form-label">Jméno filmu</label>
-                        <input type="text" class="form-control" id="movie-search" aria-describedby="emailHelp">
-                    </div>
-                    <div class="col-12">
-                        <div class="list-group" id="show-list"></div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="col-1">
         </div>
     </div>
     <div id="results-container">
@@ -58,34 +47,6 @@
         ?>
     </div>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const linkQuery = 'https://api.themoviedb.org/3/movie/1895?api_key=24d519ba38eaacef95f5c46bc71f2996&language=cs';
-
-        let nameInputBox = document.getElementById("movie-search");
-        nameInputBox.addEventListener("keyup", async () => {
-            const resultDiv = document.getElementById('show-list');
-
-            while (resultDiv.firstChild) {
-                resultDiv.removeChild(resultDiv.lastChild);
-            }
-
-            queryString = nameInputBox.value;
-            const res = await fetch('https://api.themoviedb.org/3/search/movie?api_key=24d519ba38eaacef95f5c46bc71f2996&language=cs&query=' + queryString + '&page=1&include_adult=false');
-            let data = await res.json();
-            data = data['results'];
-            data.forEach(movie => {
-                const movieResultLink = document.createElement("a");
-                movieResultLink.innerText = movie['original_title'];
-                console.log(movie['original_title'])
-                movieResultLink.setAttribute('class', 'list-group-item list-group-item-action border-1 dropdown-item');
-                movieResultLink.setAttribute('href', 'movie.php?id=' + movie['id']);
-                resultDiv.append(movieResultLink);
-
-            });
-
-        });
-    });
-
     <?php
         if (isset($_GET['id'])) {
             echo '

@@ -20,4 +20,18 @@ class TmdbSearch extends TmdbApi {
         $response_data = json_decode($json_data);
         return $response_data;
     }
+
+    public function searchMovies($queryString) {
+        $url = $this->base_url . 'search/movie?' . $this->api_key . '&language=cs&query=' . $queryString;
+        $json_data = file_get_contents($url);
+        $response_data = json_decode($json_data);
+        return $response_data;
+    }
+
+    public function getPopularMovies() {
+        $url = $this->base_url . 'movie/popular?' . $this->api_key . '&language=cs';
+        $json_data = file_get_contents($url);
+        $response_data = json_decode($json_data);
+        return $response_data;
+    }
 }
