@@ -7,7 +7,7 @@
     $title = 'Filmy';
     $active_page = 'movie';
     include 'includes/header.inc.php';
-    require_once 'includes/movie-search.inc.php';
+    require_once 'includes/searchbars/movie-search.inc.php';
 ?>
     <div class="row justify-content-start">
         <div class="col-1">

@@ -31,6 +31,7 @@ if (@$_SESSION['user_id']) {
 }
 
 include 'includes/header.inc.php';
+require_once 'includes/searchbars/tv-show-search.inc.php';
 ?>
 <div class="container-sm">
     <nav aria-label="breadcrumb">

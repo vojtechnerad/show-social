@@ -13,11 +13,6 @@ if ($requestMethod == 'GET') {
 
     $tvShowSearch = new TmdbSearch();
     $searchResults = $tvShowSearch->searchTvShows($queryString);
-    $searchResults = $searchResults->results;
-
-    if (count((array) $searchResults) > 10) {
-        $searchResults = array_slice((array) $searchResults, 0, 10);
-    };
 
     // Output of results in JSON format
     header("Content-Type: application/json");

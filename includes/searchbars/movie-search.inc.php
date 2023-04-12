@@ -1,12 +1,12 @@
 <?php
 echo '
-    <div class="container-fluid mb-3">
+    <div class="container-fluid position-relative mb-3">
         <div class="input-group">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
             <input type="text" class="form-control" id="movie-seach-input" placeholder="Zadej název hledaného filmu">
-        </div>
-        <div id="search-results-box">
-            <div class="list-group" id="list-group">
+            <div class="position-absolute" id="search-results-box">
+                <div class="list-group" id="list-group">
+                </div>
             </div>
         </div>
     </div>
@@ -54,31 +54,17 @@ echo '
                     movieResultLink.setAttribute("href", "movie.php?id=" + movie["id"]);
 
                     const movieResultBox = document.createElement("div");
-                    movieResultBox.classList.add("d-flex", "w-100", "justify-content-between");
+                    movieResultBox.classList.add("w-100");
 
-                    /*
-                    const movieResultPoster = document.createElement("img");
-                    movieResultPoster.classList.add("rounded");
-                    movieResultPoster.setAttribute("src", "https://image.tmdb.org/t/p/w500" + movie["poster_path"]);
-                    movieResultPoster.setAttribute("alt", "Plakát filmu");
-                    movieResultPoster.style.height = "100px";
-                     */
-
-                    const movieResultTitle = document.createElement("h5");
+                    const movieResultTitle = document.createElement("h6");
                     movieResultTitle.classList.add("mb-1");
-                    movieResultTitle.innerText = movie["title"];
+                    const releaseYear = new Date(movie['release_date']);
+                    movieResultTitle.innerText = movie["title"] + ' / '+ movie["original_title"] + ' (' + releaseYear.getFullYear() + ')';
 
-                    const movieResultOriginalTitle = document.createElement("h6");
-                    movieResultOriginalTitle.classList.add("mb-1");
-                    movieResultOriginalTitle.innerText = movie["original_title"];
-
-                    //movieResultBox.appendChild(movieResultPoster);
                     movieResultBox.appendChild(movieResultTitle);
-                    movieResultBox.appendChild(movieResultOriginalTitle);
                     movieResultLink.appendChild(movieResultBox);
                     listGroup.appendChild(movieResultLink);
                 });
-
                 movieSearchResults.appendChild(listGroup);
             }
         }));

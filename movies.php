@@ -5,7 +5,7 @@ $title = 'Filmy';
 $active_page = 'movie';
 
 include 'includes/header.inc.php';
-require_once 'includes/movie-search.inc.php';
+require_once 'includes/searchbars/movie-search.inc.php';
 
 $tmdbSearch = new TmdbSearch();
 
@@ -17,7 +17,7 @@ echo '<h1>Filmy</h1>';
 
 <?php
 // Výpis populárních filmů
-$popularMovies = $tmdbSearch->getPopularMovies()->results;
+$popularMovies = $tmdbSearch->getPopularMovies();
 if ($popularMovies) {
     $popularMovies = array_slice($popularMovies, 0, 10); // Omezení pouze na prvních 10 nejpopulárnějších
 
