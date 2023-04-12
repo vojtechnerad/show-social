@@ -38,7 +38,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a <?php echo(($active_page == 'people') ? $active_link_classes : $nonactive_link_classes); ?> href="people.php"><i class="bi bi-people-fill"></i> Lidé
+                    <a <?php echo(($active_page == 'people') ? $active_link_classes : $nonactive_link_classes); ?> href="users.php"><i class="bi bi-people-fill"></i> Lidé
                     <?php
                         if (isset($_SESSION['user_id'])) {
                             $friendlistStatement = $db->prepare('
