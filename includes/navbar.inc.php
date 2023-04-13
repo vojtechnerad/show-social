@@ -16,7 +16,7 @@
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="../index.php">
             <img src="/assets/favicon/android-chrome-512x512.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-bottom">
             &nbsp;Show Social
         </a>
@@ -26,7 +26,13 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a <?php echo(($active_page == 'dashboard') ? $active_link_classes : $nonactive_link_classes); ?> href="index.php">Dashboard</a>
+                    <?php
+                    if (isset($_SESSION['user_id'])) {
+                        echo '<a ' . (($active_page == 'dashboard') ? $active_link_classes : $nonactive_link_classes) . ' href="../index.php"><i class="bi bi-easel-fill"></i> Dashboard</a>';
+                    } else {
+                        echo '<a ' . (($active_page == 'introduction') ? $active_link_classes : $nonactive_link_classes) . ' href="../index.php">Úvod</a>';
+                    }
+                    ?>
                 </li>
 
                 <li class="nav-item">
@@ -105,7 +111,7 @@
                     if (isset($_SESSION['user_id'])) {
                         echo '<a ' . (($active_page == 'profile') ? $active_link_classes : $nonactive_link_classes) . ' href="../profile.php"><i class="bi bi-person-circle"></i> ' . $_SESSION['first_name'] . ' ' . $_SESSION['last_name'] . '</a>';
                     } else {
-                        echo '<a ' . (($active_page == 'login') ? $active_link_classes : $nonactive_link_classes) . ' href="../authentication.php"><i class="bi bi-person-circle"></i> Přihlášení</a>';
+                        echo '<a ' . (($active_page == 'login') ? $active_link_classes : $nonactive_link_classes) . ' href="../signin.php"><i class="bi bi-person-circle"></i> Přihlášení</a>';
                     }
                     ?>
                 </li>

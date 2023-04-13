@@ -1,7 +1,7 @@
 <?php
 require 'includes/autoloader.inc.php';
 $title = 'Přihlášení';
-$active_page = 'authentication';
+$active_page = 'login';
 include 'includes/header.inc.php';
 ?>
 <h1>Přihlášení</h1>

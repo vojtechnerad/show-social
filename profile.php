@@ -1,12 +1,12 @@
 <?php
 //require 'includes/autoloader.inc.php';
 require 'classes/dbh.class.php';
-require 'classes/user.class.php';
+require 'classes/User.class.php';
 
 session_start();
 
 if (!$_SESSION['user_id']) {
-    header('Location: authentication.php');
+    header('Location: signin.php');
     exit();
 }
 
@@ -42,7 +42,7 @@ if ($lastSeenMoviesData) {
         echo '<div class="card-body">';
         echo '<h5 class="card-title">' . $seenMovie['title'] . '</h5>';
 
-        echo '<a href="movie.php?id=' . $seenMovie['movie_id'] . '" class="stretched-link""></a>';
+        echo '<a href="movie.php?id=' . $seenMovie['movie_id'] . '" class="stretched-link"></a>';
         $seenTime = date_create($seenMovie['seen_time']);
         echo '</div>';
         echo '<div class="card-footer text-body-secondary">';

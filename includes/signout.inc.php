@@ -12,5 +12,5 @@ if (isset($_SESSION['user_name'])) {
 }
 
 // Forward user to authentication page
-header('Location: ../authentication.php');
+header('Location: ../signin.php');
 exit();

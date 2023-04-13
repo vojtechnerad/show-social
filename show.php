@@ -34,12 +34,6 @@ include 'includes/header.inc.php';
 require_once 'includes/searchbars/tv-show-search.inc.php';
 ?>
 <div class="container-sm">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="shows.php">Seriály</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><?php echo $tvShowData['name'] ?></li>
-        </ol>
-    </nav>
     <div class="row">
 <?php
 echo '<div class="col">';
@@ -76,7 +70,7 @@ echo '</div>';
 echo '<div class="row">';
 echo '<h2>Sezóny</h2>';
 
-echo '<div class="accordion" id="accordionPanelsStayOpenExample">';
+echo '<div class="accordion mb-3">';
 foreach ($tvShowData['seasons'] as $season) {
     $tvShowSeasonData = $tvShow->getSeasonData($season->season_number);
     // Accordion item

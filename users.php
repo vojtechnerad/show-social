@@ -1,73 +1,96 @@
 <?php
-//require 'includes/autoloader.inc.php';
-require 'classes/dbh.class.php';
+require_once 'classes/dbh.class.php';
 require 'classes/Users.class.php';
+require_once 'classes/User.class.php';
 
-session_start();
+@session_start();
 $active_page = 'people';
 $title = 'Lidé';
+
 include 'includes/header.inc.php';
 require_once 'includes/searchbars/users-search.inc.php';
 
-$users = new Users();
-$allUsers = $users->getAllUsers();
 
-foreach ($allUsers as $user) {
-    echo '<a href="user.php?id='. $user['id'] .'">';
-    echo $user['first_name'] . ' ' . $user['last_name'];
-    echo '</a>';
+
+$isUserLogged = isset($_SESSION['user_id']);
+
+if ($isUserLogged) {
+    $loggedUser = new User($_SESSION['user_id']);
 }
 
-$friendlistStatement = $db->prepare('
-            SELECT friendslist.requesterId, friendslist.adresseeId, friendslist.isConfirmed, concat(u1.first_name, " ", u1.last_name) as requester_full_name, concat(u2.first_name, " ", u2.last_name) as adressee_full_name
-            FROM friendslist
-            LEFT JOIN users u1
-            ON friendslist.requesterId = u1.id
-            LEFT JOIN users u2
-            ON friendslist.adresseeId = u2.id
-            WHERE (requesterId = (:current_user_id) AND isConfirmed = true)
-            OR (adresseeId = (:current_user_id) AND isConfirmed = true);
-        ');
-$friendlistStatement->execute([
-    ':current_user_id' => $_SESSION['user_id']
-]);
-$friendlistData = $friendlistStatement->fetchAll();
-
+echo '<div class="container-sm">';
 echo '<h1>Lidé</h1>';
-echo '<h3>Přátelé</h3>';
-foreach ($friendlistData as $friendship) {
-    if ($friendship['requesterId'] != $_SESSION['user_id']) {
-        echo '<a href="./user.php?id=' . $friendship['requesterId'] . '">' . $friendship['requester_full_name'] . '</a>';
+echo '<div class="row">';
+if ($isUserLogged) {
+    $incomingFriendRequests = $loggedUser->getIncomingFriendRequests();
+    echo '<div class="col-md">';
+    echo '<h3>Příchozí žádosti o přátelství</h3>';
+    echo '<div class="list-group">';
+    if ($incomingFriendRequests) {
+        foreach ($incomingFriendRequests as $friendRequest) {
+            if ($friendRequest['requesterId'] != $_SESSION['user_id']) {
+                $userId = $friendRequest['requesterId'];
+                $userFullName = $friendRequest['requester_full_name'];
+                $userUserName = $friendRequest['requester_user_name'];
+            } else {
+                $userId = $friendRequest['adresseeId'];
+                $userFullName = $friendRequest['adressee_full_name'];
+                $userUserName = $friendRequest['adressee_user_name'];
+            }
+            echo '<a href="./user.php?id=' . $userId . '" class="list-group-item list-group-item-action">' . htmlspecialchars($userFullName) . ' (@' . htmlspecialchars($userUserName) . ')</a>';
+        }
     } else {
-        echo '<a href="./user.php?id=' . $friendship['adresseeId'] . '">' . $friendship['adressee_full_name'] . '</a>';
+        echo '<div class="list-group-item">Nemáte žádné příchozí žádosti</div>';
+    }
+    echo '</div>';
+}
+echo '</div>';
+
+// Generování posledních zaregistrovaných uživatelů
+$users = new Users();
+$lastRegisteredUsers = $users->getLastRegisteredUsers();
+echo '<div class="col-md">';
+echo '<h3>Nově registrovaní</h3>';
+echo '<div class="list-group">';
+if ($lastRegisteredUsers) {
+    foreach ($lastRegisteredUsers as $user) {
+        $createdAtDate = date_create($user['created_at']);
+        echo '<a href="./user.php?id=' . $user['id'] . '" class="list-group-item list-group-item-action">' . htmlspecialchars($user['full_name']) . ' (@' . htmlspecialchars($user['user_name']) . ') ' . date_format($createdAtDate, 'd.m.Y H:i') . '</a>';
     }
 }
+echo '</div>';
+echo '</div>';
+echo '</div>';
 
-$incomingFriendRequestsStatement = $db->prepare('
-        SELECT friendslist.requesterId, friendslist.adresseeId, friendslist.isConfirmed, concat(u1.first_name, " ", u1.last_name) as requester_full_name, concat(u2.first_name, " ", u2.last_name) as adressee_full_name
-        FROM friendslist
-        LEFT JOIN users u1
-        ON friendslist.requesterId = u1.id
-        LEFT JOIN users u2
-        ON friendslist.adresseeId = u2.id
-        WHERE (adresseeId = (:current_user_id) AND isConfirmed = false);
-    ');
-$incomingFriendRequestsStatement->execute([
-    ':current_user_id' => $_SESSION['user_id']
-]);
-$incomingFriendRequestsData = $incomingFriendRequestsStatement->fetchAll();
-if ($incomingFriendRequestsData) {
-    echo '<h3>Příchozí žádosti o přátelství</h3>';
-
-    foreach ($incomingFriendRequestsData as $friendRequest) {
-        if ($friendRequest['requesterId'] != $_SESSION['user_id']) {
-            echo '<div><a href="./user.php?id=' . $friendRequest['requesterId'] . '">' . $friendRequest['requester_full_name'] . '</a></div>';
-        } else {
-            echo '<div><a href="./user.php?id=' . $friendRequest['adresseeId'] . '">' . $friendRequest['adressee_full_name'] . '</a></div>';
+if ($isUserLogged) {
+    echo '<div>';
+    echo '<h3>Přátelé</h3>';
+    echo '<div class="list-group">';
+    $userFriendShips = $loggedUser->getFriendShips();
+    if ($userFriendShips) {
+        foreach ($userFriendShips as $friendship) {
+            if ($friendship['requesterId'] != $_SESSION['user_id']) {
+                $userId = $friendship['requesterId'];
+                $userFullName = $friendship['requester_full_name'];
+                $userUserName = $friendship['requester_user_name'];
+            } else {
+                $userId = $friendship['adresseeId'];
+                $userFullName = $friendship['adressee_full_name'];
+                $userUserName = $friendship['adressee_user_name'];
+            }
+            echo '<a href="./user.php?id=' . $userId . '" class="list-group-item list-group-item-action">';
+            echo $userFullName;
+            echo '</a>';
         }
+    } else {
+        echo '<p>Nemáte přidané žádné přátele.</p>';
     }
+    echo '</div>';
+    echo '</div>';
+
 }
 ?>
 
 <?php
+echo '</div>'; // Container
 include 'includes/footer.inc.php';

@@ -27,7 +27,7 @@ if (!empty($_POST)) {
         }
     }
 
-    header('Location: ../authentication.php');
+    header('Location: ../signin.php');
     exit();
 
     var_dump($emailQuery);
