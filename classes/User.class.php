@@ -1,6 +1,5 @@
 <?php
-require_once 'includes/dbconn.inc.php';
-
+require_once 'classes/dbh.class.php';
 class User extends Dbh {
     private $id;
 
@@ -8,10 +7,65 @@ class User extends Dbh {
         $this->id = $userId;
     }
 
+    function getUserData() {
+        $sql = '
+            SELECT
+                id,
+                concat(first_name, " ", last_name) as full_name,
+                user_name,
+                public_profile
+            FROM users
+            WHERE id = (:user_id)
+            LIMIT 1;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetch();
+    }
+
+    function isUserBefriendedWith($askingUser) {
+        $sql = '
+            SELECT requesterId, adresseeId, isConfirmed, timestamp
+            FROM friendslist
+            WHERE (requesterId = (:requesterUser) AND adresseeId = (:targetUser)) AND isConfirmed = true
+            OR (requesterId = (:targetUser) AND adresseeId = (:requesterUser)) AND isConfirmed = true
+            LIMIT 1;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':requesterUser' => $askingUser,
+            ':targetUser' => $this->id
+        ]);
+        return $statement->fetch();
+    }
+
     function getSeenMovies() {
-        $sql = 'SELECT movie_id FROM seen_movies WHERE user_id = ' . $_SESSION['user_id'];
-        $statement = $this->connect()->query($sql)->fetchAll();
-        return $statement;
+        $sql = '
+            SELECT movie_id
+            FROM seen_movies
+            WHERE user_id = (:user_id)
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetchAll();
+    }
+
+    function getLastSeenMovies() {
+        $sql = '
+            SELECT movie_id
+            FROM seen_movies
+            WHERE user_id = (:user_id)
+            LIMIT 10;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetchAll();
     }
 
     function getFriendShips() {

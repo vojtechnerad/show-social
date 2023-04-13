@@ -1,5 +1,6 @@
 <?php
-require_once './includes/dbconn.inc.php';
+//require_once './includes/dbconn.inc.php';
+require_once 'classes/User.class.php';
 @session_start();
 $userId = $_GET['id'];
 $title = 'Úvod';
@@ -19,18 +20,10 @@ if ($userId == @$_SESSION['user_id']) {
     exit();
 }
 
-$selectedUserQueryStatement = $db->prepare('
-    SELECT user_name, first_name, last_name, created_at
-    FROM users
-    WHERE id = (:id)
-    LIMIT 1;
-');
-$selectedUserQueryStatement->execute(
-    array(':id' => $userId)
-);
-$selectedUserData = $selectedUserQueryStatement->fetch();
+$selectedUser = new User($userId);
 
-if (!$selectedUserData) {
+
+if (!$selectedUser) {
     include 'includes/header.inc.php';
     echo '<h1>Chyba!</h1>';
     echo '<p>Hledaný účet neexistuje.</p>';
@@ -40,9 +33,14 @@ if (!$selectedUserData) {
 
 include 'includes/header.inc.php';
 
-echo '<h1>' . htmlspecialchars($selectedUserData['first_name']) . ' ' . htmlspecialchars($selectedUserData['last_name']) . '</h1>';
+$selectedUserData = $selectedUser->getUserData();
+
+
+
+echo '<h1>' . htmlspecialchars($selectedUserData['full_name']) . '</h1>';
 echo '<h2>@' .htmlspecialchars($selectedUserData['user_name']) . '</h2>';
 
+// Generování buttonu na spřátelení
 if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
     // Získání stavu přátelství
     $friendlistStatement = $db->prepare('
@@ -84,6 +82,14 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
         echo '<button type="submit" class="btn btn-danger"><i class="bi bi-person-dash-fill"></i> Odebrat z přátel</button>';
     }
     echo '</form>';
+}
+
+// Kontrola soukromého profilu a spřetelených účtů
+$isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
+if (!$selectedUserData['public_profile'] AND !$isBefriended) {
+    echo '<h3>Uživatel má soukromý profil.</h3>';
+} else {
+    echo '<h3>Lze vidět.</h3>';
 }
 
 ?>
