@@ -132,15 +132,38 @@ echo '</div>';
         const response = await request.json();
 
         if (response) {
-            const button = document.getElementById('S' + seasonNumber + 'E' + episodeNumber);
+            if (response['successfulChange']) {
+                const button = document.getElementById('S' + seasonNumber + 'E' + episodeNumber);
 
-            if (response['newSeenStatus']) {
+                if (response['newSeenStatus']) {
+                    button.innerText = 'Zhlédnuto';
+                    button.classList = 'btn btn-success position-absolute top-0 end-0';
+                } else {
+                    button.innerText = 'Zapsat';
+                    button.classList = 'btn btn-secondary position-absolute top-0 end-0';
+                }
 
-                button.innerText = 'Zhlédnuto';
-                button.classList = 'btn btn-success position-absolute top-0 end-0';
+                Toastify({
+                    text: 'Změna úspěšně uložena',
+                    duration: 1000,
+                    newWindow: false,
+                    gravity: "bottom",
+                    position: "center",
+                    style: {
+                        background: "#158000"
+                    }
+                }).showToast();
             } else {
-                button.innerText = 'Zapsat';
-                button.classList = 'btn btn-secondary position-absolute top-0 end-0';
+                Toastify({
+                    text: 'Nastala chyba - epizoda pravěpodobně nemá všechny potřebná data',
+                    duration: 2000,
+                    newWindow: false,
+                    gravity: "bottom",
+                    position: "center",
+                    style: {
+                        background: "#80000b"
+                    }
+                }).showToast();
             }
         }
     }

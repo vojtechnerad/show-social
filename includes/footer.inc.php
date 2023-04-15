@@ -1,5 +1,6 @@
 </div>
 <script type="text/javascript" src="../scripts/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../scripts/toastify.js"></script>
 <script>
     if (!navigator.serviceWorker.controller) {
         navigator.serviceWorker.register("/sw.js").then(function(reg) {

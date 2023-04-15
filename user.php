@@ -1,4 +1,12 @@
 <?php
+/**
+ * Stránka User
+ *
+ * Výpis profilu zvoleného uživatele skrze GETový parametr.
+ * Zvolený parametr bude zkontrolován že je ve správném formátu (numerický a celočíselný)
+ * a poté se zadá jako parametr pro query databáze.
+ */
+
 //require_once './includes/dbconn.inc.php';
 require_once 'classes/User.class.php';
 @session_start();
