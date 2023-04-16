@@ -1,7 +1,7 @@
 <?php
-    require 'includes/autoloader.inc.php';
     require_once 'classes/Movie.php';
     require_once 'classes/TmdbSearch.class.php';
+    require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
 
 
     $title = 'Filmy';
@@ -9,15 +9,6 @@
     include 'includes/header.inc.php';
     require_once 'includes/searchbars/movie-search.inc.php';
 ?>
-    <div class="row justify-content-start">
-        <div class="col-1">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb" id="breadcrumb-list">
-                    <li class="breadcrumb-item active" aria-current="page">Filmy</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
     <div id="results-container">
         <?php
             if (isset($_GET['id'])) {
@@ -32,14 +23,16 @@
                     echo '<p>' . $movieDetails->overview . '</p>';
                     echo '<p><i class="bi bi-clock-fill"></i>' . $movieDetails->runtime . ' minut</p>';
                     if (isset($_SESSION['user_id'])) {
-                        echo '<button id="changeStatusBtn">Zapsat</button>';
-                        echo '<button id="" class="btn btn-secondary">Bookmark</button>';
-                        echo '<button class="btn btn-outline-warning"><i class="bi bi-star"></i> Oblíbené</button>';
-                    }
-                    echo '<pre>';
-                    var_dump($movieDetails);
-                    echo '</pre>';
+                        $user = new User($_SESSION['user_id']);
+                        $isSeenByUser = $user->hasUserSeenMovie($movieId);
+                        $buttonClass = '';
+                        if ($isSeenByUser) {
+                            echo '<button id="changeStatusBtn" class="btn btn-success" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zhlédnuto</button>';
+                        } else {
+                            echo '<button id="changeStatusBtn" class="btn btn-secondary" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zapsat</button>';
+                        }
 
+                    }
                 } else {
                     //TODO not int id
                 }
@@ -47,42 +40,67 @@
         ?>
     </div>
 <script>
-    <?php
-        if (isset($_GET['id'])) {
-            echo '
-            const changeStatusBtn = document.getElementById("changeStatusBtn");
-            changeStatusBtn.addEventListener("click", async () => {
-                let request = await fetch("http://localhost/api/movie-change-status.php?movie_id=' . $_GET['id'] . '", {
-                    method: "PUT"
-                });
-                let response = await request.json();
-                console.log(response);
-                if (response["success"] == 1) {
-                    if (response["newStatus"] == "seen") {
-                        changeStatusBtn.setAttribute("class", "btn btn-success");
-                    } else {
-                        changeStatusBtn.setAttribute("class", "btn btn-secondary");
-                    }
-                } else if (response["success"] == 0) {
-                    // TODO dodělat error
-                }
-            });
+    async function markMovieAsSeen(movieId) {
+        const request = await fetch("http://localhost/api/movie-change-status.php", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "movieId": movieId,
+            })
+        });
+        const response = await request.json();
 
-            async function getStatus() {
-                let request = await fetch("http://localhost/api/movie-get-status.php?movie_id=' . $_GET['id'] . '");
-                let response = await request.json();
-                if (response["status"] == "seen") {
-                    changeStatusBtn.setAttribute("class", "btn btn-success");
-                } else {
-                    changeStatusBtn.setAttribute("class", "btn btn-secondary");
+
+        if (response['successfulChange']) {
+            const button = document.getElementById('changeStatusBtn');
+            const bingeMeterButton = document.getElementById('binge-meter-button');
+            let bingeMeterClass = '';
+
+            if (response['newSeenStatus']) {
+                button.innerText = 'Zhlédnuto';
+                button.classList = 'btn btn-success';
+            } else {
+                button.innerText = 'Zapsat';
+                button.classList = 'btn btn-secondary';
+            }
+
+            bingeMeterButton.innerText = 'Binge Meter: ' + response['newWatchtimePercentage'];
+            if (response['newWatchtimePercentage'] < 80) {
+                bingeMeterClass = 'success';
+            } else if (response['newWatchtimePercentage'] < 100) {
+                bingeMeterClass = 'warning';
+            } else {
+                bingeMeterClass = 'danger';
+            }
+            bingeMeterButton.classList = 'btn btn-' + bingeMeterClass;
+
+            Toastify({
+                text: 'Změna úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
                 }
-            };
-            getStatus();
-            ';
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Nastala chyba - epizoda pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
         }
-    ?>
-    </script>
-
+    }
+</script>
 <?php
     include 'includes/footer.inc.php';
 ?>

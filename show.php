@@ -134,6 +134,8 @@ echo '</div>';
         if (response) {
             if (response['successfulChange']) {
                 const button = document.getElementById('S' + seasonNumber + 'E' + episodeNumber);
+                const bingeMeterButton = document.getElementById('binge-meter-button');
+                let bingeMeterClass = '';
 
                 if (response['newSeenStatus']) {
                     button.innerText = 'Zhlédnuto';
@@ -142,6 +144,17 @@ echo '</div>';
                     button.innerText = 'Zapsat';
                     button.classList = 'btn btn-secondary position-absolute top-0 end-0';
                 }
+                bingeMeterButton.innerText = 'Binge Meter: ' + response['newWatchtimePercentage'];
+
+
+                if (response['newWatchtimePercentage'] < 80) {
+                    bingeMeterClass = 'success';
+                } else if (response['newWatchtimePercentage'] < 100) {
+                    bingeMeterClass = 'warning';
+                } else {
+                    bingeMeterClass = 'danger';
+                }
+                bingeMeterButton.classList = 'btn btn-' + bingeMeterClass;
 
                 Toastify({
                     text: 'Změna úspěšně uložena',

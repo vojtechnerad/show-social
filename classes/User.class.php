@@ -1,5 +1,5 @@
 <?php
-require_once 'classes/dbh.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/dbh.class.php';
 class User extends Dbh {
     private $id;
 
@@ -116,6 +116,83 @@ class User extends Dbh {
             ":current_user_id" => $this->id
         ]);
         return $statement->fetchAll();
+    }
+
+    function getWatchtimePerLastDay() {
+        $showSql = '
+            SELECT SUM(tv_show_episodes.runtime) as runtime
+            FROM seen_episodes
+            LEFT JOIN tv_show_episodes
+            ON seen_episodes.id = tv_show_episodes.id
+            WHERE seen_episodes.timestamp >= NOW() - INTERVAL 1 DAY AND user_id = (:user_id);
+        ';
+        $showsStatement = $this->connect()->prepare($showSql);
+        $showsStatement->execute([
+            ":user_id" => $this->id
+        ]);
+        $showsWatchtime = $showsStatement->fetch();
+
+        $moviesSql = '
+            SELECT SUM(movies.runtime) as runtime
+            FROM seen_movies
+            LEFT JOIN movies
+            ON seen_movies.movie_id = movies.movie_id
+            WHERE seen_movies.timestamp >= NOW() - INTERVAL 1 DAY AND user_id = (:user_id);
+        ';
+        $moviesStatement = $this->connect()->prepare($moviesSql);
+        $moviesStatement->execute([
+            ":user_id" => $this->id
+        ]);
+        $moviesWatchtime = $moviesStatement->fetch();
+
+        $totalWatchtime = new stdClass();
+        $totalWatchtime->watchtime = 0;
+
+        if ($showsWatchtime['runtime']) {
+            $totalWatchtime->watchtime = $totalWatchtime->watchtime + $showsWatchtime['runtime'];
+        }
+
+        if ($moviesWatchtime['runtime']) {
+            $totalWatchtime->watchtime = $totalWatchtime->watchtime + $moviesWatchtime['runtime'];
+        }
+
+        $limitSql = '
+            SELECT watch_limit
+            FROM users
+            WHERE id = (:user_id)
+            LIMIT 1;
+        ';
+        $limitStatement = $this->connect()->prepare($limitSql);
+        $limitStatement->execute([
+            ':user_id' => $this->id
+        ]);
+        $watchtimeLimit = $limitStatement->fetch();
+
+        $totalWatchtime->watchtimeLimit = $watchtimeLimit['watch_limit'];
+
+        $totalWatchtime->watchtimePercentage = round((($totalWatchtime->watchtime/$totalWatchtime->watchtimeLimit) * 100), 1);
+        return $totalWatchtime;
+    }
+
+    function hasUserSeenMovie($movieId) {
+        $sql = '
+            SELECT timestamp
+            FROM `seen_movies`
+            WHERE user_id = (:user_id) and movie_id = (:movie_id)
+            LIMIT 1;
+        ';
+        $seenMovieStatement = $this->connect()->prepare($sql);
+        $seenMovieStatement->execute([
+            ':user_id' => $this->id,
+            ':movie_id' => $movieId,
+        ]);
+        $seenMovieData = $seenMovieStatement->fetch();
+
+        if (@$seenMovieData['timestamp']) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     function getId() {

@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/dbconn.inc.php';
 require_once '../classes/TvShow.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
 session_start();
 
 // Check for PUT method
@@ -46,10 +47,10 @@ if ($requestMethod === 'POST') {
 
             // Kontrola jestli byla epizoda viděna uživatelem
             $seenStmnt = $db->prepare('
-            SELECT id, user_id
-            FROM seen_episodes
-            WHERE id = (:id) AND user_id = (:user_id);
-        ');
+                SELECT id, user_id
+                FROM seen_episodes
+                WHERE id = (:id) AND user_id = (:user_id);
+            ');
             $seenStmnt->bindParam(':id', $tvShowEpisodeData['id']);
             $seenStmnt->bindParam(':user_id',$_SESSION['user_id']);
             $seenStmnt->execute();
@@ -68,8 +69,6 @@ if ($requestMethod === 'POST') {
 
                 $response->successfulChange = true;
                 $response->newSeenStatus = false;
-                header("Content-Type: application/json");
-                echo json_encode($response);
             } else {
                 $insStmntSeenStatus = $db->prepare('
                 INSERT INTO seen_episodes (id, user_id)
@@ -81,9 +80,12 @@ if ($requestMethod === 'POST') {
 
                 $response->successfulChange = true;
                 $response->newSeenStatus = true;
-                header("Content-Type: application/json");
-                echo json_encode($response);
             }
+            $user = new User($_SESSION['user_id']);
+            $watchtimeObject = $user->getWatchtimePerLastDay();
+            $response->newWatchtimePercentage = $watchtimeObject->watchtimePercentage;
+            header("Content-Type: application/json");
+            echo json_encode($response);
         }
     }
     catch (PDOException $PDOException) {

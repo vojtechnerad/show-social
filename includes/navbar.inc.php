@@ -1,4 +1,6 @@
 <?php
+    require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
+
     $active_link_classes = 'class="nav-link active" aria-current="page"';
     $nonactive_link_classes = 'class="nav-link"';
 
@@ -11,6 +13,9 @@
         ');
         $userDataStatement->execute(array(':id' => $_SESSION['user_id']));
         $userData = $userDataStatement->fetch();
+
+        $user = new User($_SESSION['user_id']);
+
     }
 ?>
 
@@ -68,23 +73,8 @@
                 <li class="nav-item">
                     <?php
                     if (isset($_SESSION['user_id'])) {
-                        $seenMinutesTodayStatement = $db->prepare('
-                            SELECT seen_episodes.id as id, seen_episodes.timestamp as seen_time, seen_episodes.user_id as user_id, tv_show_episodes.runtime as runtime
-                            FROM seen_episodes
-                            LEFT JOIN tv_show_episodes
-                            ON seen_episodes.id = tv_show_episodes.id
-                            WHERE seen_episodes.timestamp >= NOW() - INTERVAL 1 DAY AND user_id = (:user_id);
-                        ');
-                        $seenMinutesTodayStatement->execute([
-                                ':user_id' => $_SESSION['user_id']
-                        ]);
-                        $seenMinutesTodayData = $seenMinutesTodayStatement->fetchAll();
-
-                        $seenMinutesInTotal = 0;
-                        foreach ($seenMinutesTodayData as $show) {
-                            $seenMinutesInTotal = $seenMinutesInTotal + $show['runtime'];
-                        }
-
+                        $watchtimeObject = $user->getWatchtimePerLastDay();
+                        $seenMinutesInTotal = $watchtimeObject->watchtime;
                         $bingeMeterClass = ($seenMinutesInTotal > $userData['watch_limit']) ? 'btn-danger' : 'btn-success';
                         $seenPercentage = 0;
                         $seenPercentage = round((($seenMinutesInTotal/$userData['watch_limit']) * 100), 1);
@@ -96,11 +86,9 @@
                         } else {
                             $bingeMeterClass = 'danger';
                         }
-
-
                         $bingeMeterContent = 'Za dnešek jste zhlédli ' . $seenMinutesInTotal . ' minut obsahu (' . $seenPercentage . ' %) z vašeho limitu ' . $userData['watch_limit'] . ' minut.';
                         //echo '<button type="button" class="btn ' . $bingeMeterClass . '" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-title="Binge Meter statistika" data-bs-content="' . $bingeMeterContent . '">';
-                        echo '<button type="button" class="btn btn-' . $bingeMeterClass . '" data-bs-toggle="modal" data-bs-target="#exampleModal" data-backdrop="false">';
+                        echo '<button type="button" id="binge-meter-button" class="btn btn-' . $bingeMeterClass . '" data-bs-toggle="modal" data-bs-target="#exampleModal" data-backdrop="false">';
                         echo 'Binge Meter: ' . $seenPercentage;
                         echo '</button>';
                     }
