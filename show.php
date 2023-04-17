@@ -117,7 +117,7 @@ echo '</div>';
 
 <script>
     async function markEpisodeAsSeen(showId, seasonNumber, episodeNumber) {
-        const request = await fetch("http://localhost/api/episode-change-status.php", {
+        const request = await fetch("/api/episode-change-status.php", {
             method: "post",
             headers: {
                 'Accept': 'application/json',

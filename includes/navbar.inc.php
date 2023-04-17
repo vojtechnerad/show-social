@@ -1,4 +1,5 @@
 <?php
+    @session_start();
     require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
 
     $active_link_classes = 'class="nav-link active" aria-current="page"';
@@ -87,10 +88,9 @@
                             $bingeMeterClass = 'danger';
                         }
                         $bingeMeterContent = 'Za dnešek jste zhlédli ' . $seenMinutesInTotal . ' minut obsahu (' . $seenPercentage . ' %) z vašeho limitu ' . $userData['watch_limit'] . ' minut.';
-                        //echo '<button type="button" class="btn ' . $bingeMeterClass . '" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-title="Binge Meter statistika" data-bs-content="' . $bingeMeterContent . '">';
-                        echo '<button type="button" id="binge-meter-button" class="btn btn-' . $bingeMeterClass . '" data-bs-toggle="modal" data-bs-target="#exampleModal" data-backdrop="false">';
+                        echo '<a href="../bingemeter.php" id="binge-meter-button" class="btn btn-' . $bingeMeterClass . '">';
                         echo 'Binge Meter: ' . $seenPercentage;
-                        echo '</button>';
+                        echo '</a>';
                     }
                     ?>
                 </li>
@@ -118,41 +118,6 @@
                 }
                 ?>
             </ul>
-        </div>
-    </div>
-
-    <!-- Binge Meter Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Binge Meter statistika</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p><?php echo $bingeMeterContent ?></p>
-                    <div class="progress">
-                        <div class="progress-bar bg-<?php echo $bingeMeterClass ?>" role="progressbar" style="width: <?php echo $seenPercentage ?>%" aria-valuenow="<?php echo $seenPercentage ?>" aria-valuemin="0" aria-valuemax="100">
-                            <?php echo $seenPercentage . ' %' ?>
-                        </div>
-                    </div>
-                    <br />
-                    <?php
-                        echo '<p>';
-                        if ($seenPercentage < 80) {
-                            echo 'Do nastaveného limitu zbývá ještě dost času. Užívejte si sledování.';
-                        } elseif ($seenPercentage < 100) {
-                            echo 'Začínáte se blížit nastavenému limitu. Pomalu byste měli přestat sledovat.';
-                        } else {
-                            echo 'Limit pro sledování vypršel. Vraťte se ke sledování zase zítra.';
-                        }
-                        echo '</p>';
-                    ?>
-                </div>
-                <div class="modal-footer">
-                    <a class="btn btn-light" href="../bingemeterexplanation.php">Jak to funguje?</a>
-                </div>
-            </div>
         </div>
     </div>
 </nav>

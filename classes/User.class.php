@@ -108,8 +108,7 @@ class User extends Dbh {
             ON friendslist.requesterId = u1.id
             LEFT JOIN users u2
             ON friendslist.adresseeId = u2.id
-            WHERE (adresseeId = (:current_user_id) AND isConfirmed = false)
-            LIMIT 6;
+            WHERE (adresseeId = (:current_user_id) AND isConfirmed = false);
         ';
         $statement = $this->connect()->prepare($sql);
         $statement->execute([

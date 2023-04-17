@@ -1,10 +1,40 @@
 <?php
 $title = 'Co je to Binge Meter? • Show Social';
 $active_page = 'profile';
+@session_start();
+
+if (@!$_SESSION['user_id']) {
+    include 'includes/header.inc.php';
+    echo '<h1>Chyba</h1>';
+    include 'includes/footer.inc.php';
+    exit();
+}
+
 include 'includes/header.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
+
+
+
+$user = new User($_SESSION['user_id']);
+$watchtimeObject = $user->getWatchtimePerLastDay();
+$seenMinutesInTotal = $watchtimeObject->watchtime;
+$seenPercentage = $watchtimeObject->watchtimePercentage;
+$limit = $watchtimeObject->watchtimeLimit;
+var_dump($watchtimeObject);
+$bingeMeterContent = 'Za dnešek jste zhlédli ' . $seenMinutesInTotal . ' minut obsahu (' . $seenPercentage . ' %) z vašeho limitu ' . $limit . ' minut.';
+echo '<p>' . $bingeMeterContent . '</p>';
+echo '<p>';
+    if ($seenPercentage < 80) {
+    echo 'Do nastaveného limitu zbývá ještě dost času. Užívejte si sledování.';
+    } elseif ($seenPercentage < 100) {
+    echo 'Začínáte se blížit nastavenému limitu. Pomalu byste měli přestat sledovat.';
+    } else {
+    echo 'Limit pro sledování vypršel. Vraťte se ke sledování zase zítra.';
+    }
+    echo '</p>';
+
 ?>
 <h1>Binge Meter</h1>
-
 <h3>Co to je</h3>
 <p>Binge Meter je speciální ukazatel, zobrazující kolik času uživatel strávil sledováním filmů a seriálů.</p>
 

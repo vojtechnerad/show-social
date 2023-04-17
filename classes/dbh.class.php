@@ -1,6 +1,12 @@
 <?php
 
 class Dbh {
+    /* endora
+    private $host = "sqlb1.endora.cz";
+    private $username = "vojtechnerad";
+    private $password = "Ayylmao1337";
+    private $dbname = "showsocial";
+    */
     private $host = "localhost";
     private $username = "root";
     private $password = "ayylmao1337";

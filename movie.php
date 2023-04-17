@@ -41,7 +41,7 @@
     </div>
 <script>
     async function markMovieAsSeen(movieId) {
-        const request = await fetch("http://localhost/api/movie-change-status.php", {
+        const request = await fetch("/api/movie-change-status.php", {
             method: "post",
             headers: {
                 'Accept': 'application/json',

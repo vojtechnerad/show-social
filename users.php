@@ -1,9 +1,9 @@
 <?php
+@session_start();
 require_once 'classes/dbh.class.php';
 require 'classes/Users.class.php';
 require_once 'classes/User.class.php';
 
-@session_start();
 $active_page = 'people';
 $title = 'Lidé';
 
