@@ -1,44 +1,55 @@
 <?php
-    require_once 'classes/Movie.php';
-    require_once 'classes/TmdbSearch.class.php';
-    require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
+require_once 'classes/Movie.php';
+require_once 'classes/TmdbSearch.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
 
 
-    $title = 'Filmy';
-    $active_page = 'movie';
-    include 'includes/header.inc.php';
-    require_once 'includes/searchbars/movie-search.inc.php';
-?>
-    <div id="results-container">
-        <?php
-            if (isset($_GET['id'])) {
-                $movieId = $_GET['id'];
-                if ($movieId > 0) {
-                    $movie = new Movie($movieId);
-                    $movieDetails = $movie->getDataFromTmdb();
+$title = 'Filmy';
+$active_page = 'movie';
+include 'includes/header.inc.php';
+require_once 'includes/searchbars/movie-search.inc.php';
 
-                    echo '<h1>' . $movieDetails->title . '</h1>';
-                    echo '<h2>' . $movieDetails->original_title . '</h2>';
-                    echo '<img src="https://www.themoviedb.org/t/p/w500' . $movieDetails->poster_path . '" alt="Plakát filmu ' . $movieDetails->title . '">';
-                    echo '<p>' . $movieDetails->overview . '</p>';
-                    echo '<p><i class="bi bi-clock-fill"></i>' . $movieDetails->runtime . ' minut</p>';
-                    if (isset($_SESSION['user_id'])) {
-                        $user = new User($_SESSION['user_id']);
-                        $isSeenByUser = $user->hasUserSeenMovie($movieId);
-                        $buttonClass = '';
-                        if ($isSeenByUser) {
-                            echo '<button id="changeStatusBtn" class="btn btn-success" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zhlédnuto</button>';
-                        } else {
-                            echo '<button id="changeStatusBtn" class="btn btn-secondary" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zapsat</button>';
-                        }
+if (isset($_GET['id'])) {
+    $movieId = $_GET['id'];
+        if ($movieId > 0) {
+            $movie = new Movie($movieId);
+            $movieDetails = $movie->getDataFromTmdb();
 
-                    }
+            echo '<div class="container-sm">';
+            echo '<div class="row ">';
+            echo '<div class="col-8">';
+            echo '<h1>' . $movieDetails->title . '</h1>';
+            echo '<h2>' . $movieDetails->original_title . '</h2>';
+            echo '<p>' . $movieDetails->overview . '</p>';
+            $releaseDate = date_create($movieDetails->release_date);
+            echo '<p><i class="bi bi-calendar-event-fill"></i> ' . date_format($releaseDate, 'd.m.Y') . '</p>';
+            echo '<p><i class="bi bi-clock-fill"></i> ' . $movieDetails->runtime . ' minut</p>';
+
+            // Zhlédnout button
+            if (isset($_SESSION['user_id'])) {
+                $user = new User($_SESSION['user_id']);
+                $isSeenByUser = $user->hasUserSeenMovie($movieId);
+                $buttonClass = '';
+                if ($isSeenByUser) {
+                    echo '<button id="changeStatusBtn" class="btn btn-success" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zhlédnuto</button>';
                 } else {
-                    //TODO not int id
+                    echo '<button id="changeStatusBtn" class="btn btn-secondary" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zapsat</button>';
                 }
             }
-        ?>
-    </div>
+
+            echo '</div>';
+
+            echo '<div class="col-4">';
+            echo '<img src="https://www.themoviedb.org/t/p/w500' . $movieDetails->poster_path . '" class="rounded float-start img-fluid" alt="Plakát filmu ' . $movieDetails->title . '">';
+            echo '</div>';
+
+            echo '</div>';
+            echo '</div>';
+        } else {
+            //TODO not int id
+        }
+}
+?>
 <script>
     async function markMovieAsSeen(movieId) {
         const request = await fetch("/api/movie-change-status.php", {

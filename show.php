@@ -33,7 +33,7 @@ include 'includes/header.inc.php';
 require_once 'includes/searchbars/tv-show-search.inc.php';
 ?>
 <div class="container-sm">
-    <div class="row">
+<div class="row">
 <?php
 echo '<div class="col">';
 if ($tvShowData['name']) {
