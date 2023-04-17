@@ -1,5 +1,4 @@
 <?php
-require 'includes/autoloader.inc.php';
 $title = 'Přihlášení';
 $active_page = 'login';
 include 'includes/header.inc.php';

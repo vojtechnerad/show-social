@@ -1,5 +1,4 @@
 <?php
-//require 'includes/autoloader.inc.php';
 require 'classes/dbh.class.php';
 require 'classes/User.class.php';
 

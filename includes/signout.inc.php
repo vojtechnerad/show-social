@@ -29,5 +29,7 @@ if (isset($_SESSION['user_name'])) {
 // Forward user to authentication page
 session_unset();
 session_destroy();
+setcookie('PHPSESSID', null);
+session_regenerate_id(TRUE);
 header('Location: ../signin.php');
 exit();

@@ -119,7 +119,7 @@ if (!$selectedUserData['public_profile'] AND !$isBefriended) {
             echo '</div>';
             echo '</div>';
         }
-        echo '<a href="seenmovies.php?user_id=' . $userId .'">Výpis všech filmů</a>';
+        echo '<a href="seenmovies.php?user_id=' . $userId .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých filmů <i class="bi bi-arrow-right"></i></a>';
         echo '</div>';
     } else {
         echo '<p>Uživatel zatím nemá žádné zhlédnuté filmy.</p>';
@@ -147,6 +147,7 @@ if (!$selectedUserData['public_profile'] AND !$isBefriended) {
             echo '</div>';
             echo '</div>';
         }
+        echo '<a href="seenepisodes.php?user_id=' . $userId .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých epizod <i class="bi bi-arrow-right"></i></a>';
         echo '</div>';
     } else {
         echo '<p>Uživatel zatím nemá žádné zhlédnuté epizody.</p>';

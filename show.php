@@ -3,7 +3,6 @@
  * Page with details about selected show.
  */
 session_start();
-//require 'includes/autoloader.inc.php';
 require_once 'classes/TvShow.class.php';
 require_once 'includes/dbconn.inc.php';
 

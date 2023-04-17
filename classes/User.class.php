@@ -80,6 +80,31 @@ class User extends Dbh {
         return $statement->fetchAll();
     }
 
+    function getSeenEpisodes() {
+        $sql = '
+            SELECT tv_shows.id as show_id,
+            tv_shows.name as show_name,
+            tv_shows.poster_path as poster_path,
+            tv_show_episodes.name as episode_name,
+            seen_episodes.timestamp as seen_time,
+            tv_show_episodes.season_number as season_number,
+            tv_show_episodes.episode_number as episode_number,
+            tv_show_episodes.runtime as runtime
+            FROM seen_episodes
+            LEFT JOIN tv_show_episodes
+            ON seen_episodes.id = tv_show_episodes.id
+            LEFT JOIN tv_shows
+            ON tv_show_episodes.show_id = tv_shows.id
+            WHERE user_id = (:user_id)
+            ORDER BY seen_time DESC;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetchAll();
+    }
+
     function getLastSeenEpisodes() {
         $sql = '
             SELECT tv_shows.id as show_id,
