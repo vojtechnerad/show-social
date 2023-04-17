@@ -31,7 +31,7 @@ if ($userId == @$_SESSION['user_id']) {
 $selectedUser = new User($userId);
 
 
-if (!$selectedUser) {
+if (!$selectedUser->getId()) {
     include 'includes/header.inc.php';
     echo '<h1>Chyba!</h1>';
     echo '<p>Hledaný účet neexistuje.</p>';
@@ -94,10 +94,63 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
 
 // Kontrola soukromého profilu a spřetelených účtů
 $isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
+
 if (!$selectedUserData['public_profile'] AND !$isBefriended) {
     echo '<h3>Uživatel má soukromý profil.</h3>';
 } else {
     echo '<h3>Lze vidět.</h3>';
+
+    // Výpis filmů
+    echo '<h3>Poslední zlhédnuté filmy</h3>';
+    $lastSeenMovies = $selectedUser->getLastSeenMovies();
+    if ($lastSeenMovies) {
+        echo '<div class="row">';
+        foreach ($lastSeenMovies as $seenMovie) {
+            echo '<div class="card p-0 ms-2 mb-2" style="width: 10rem;">';
+            echo '<img src="https://image.tmdb.org/t/p/w500' . $seenMovie['poster_path'] . '" class="card-img-top" alt="...">'; // TODO alt text
+            echo '<div class="card-body">';
+            echo '<h5 class="card-title">' . $seenMovie['title'] . '</h5>';
+
+            echo '<a href="movie.php?id=' . $seenMovie['movie_id'] . '" class="stretched-link"></a>';
+            $seenTime = date_create($seenMovie['seen_time']);
+            echo '</div>';
+            echo '<div class="card-footer text-body-secondary">';
+            echo date_format($seenTime, 'd.m.Y H:i');
+            echo '</div>';
+            echo '</div>';
+        }
+        echo '<a href="seenmovies.php?user_id=' . $userId .'">Výpis všech filmů</a>';
+        echo '</div>';
+    } else {
+        echo '<p>Uživatel zatím nemá žádné zhlédnuté filmy.</p>';
+    }
+
+    // Výpis seriálů
+    echo '<h3>Poslední zlhédnuté seriály</h3>';
+    $lastSeenEpisodes = $selectedUser->getLastSeenEpisodes();
+    if ($lastSeenEpisodes) {
+        echo '<div class="row">';
+        foreach ($lastSeenEpisodes as $seenEpisode) {
+            // Tvorba karty epizody
+            echo '<div class="card p-0 ms-2 mb-2" style="width: 10rem;">';
+            echo '<img src="https://image.tmdb.org/t/p/w500' . $seenEpisode['poster_path'] . '" class="card-img-top" alt="...">'; // TODO alt text
+            echo '<div class="card-body">';
+            echo '<h5 class="card-title">' . $seenEpisode['show_name'] . '</h5>';
+            echo '<h6 class="card-title">' . $seenEpisode['episode_name'] . '</h6>';
+            $episodeCode = 'S' . $seenEpisode['season_number'] . 'E' . $seenEpisode['episode_number'];
+            echo '<p class="card-text">' . $episodeCode . '</p>';
+            echo '<a href="show.php?id=' . $seenEpisode['show_id'] . '" class="stretched-link""></a>';
+            $seenTime = date_create($seenEpisode['seen_time']);
+            echo '</div>';
+            echo '<div class="card-footer text-body-secon dary">';
+            echo date_format($seenTime, 'd.m.Y H:i');
+            echo '</div>';
+            echo '</div>';
+        }
+        echo '</div>';
+    } else {
+        echo '<p>Uživatel zatím nemá žádné zhlédnuté epizody.</p>';
+    }
 }
 
 ?>

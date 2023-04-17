@@ -43,9 +43,18 @@ class User extends Dbh {
 
     function getSeenMovies() {
         $sql = '
-            SELECT movie_id
+            SELECT seen_movies.user_id as user_id,
+                   seen_movies.movie_id as movie_id,
+                   seen_movies.timestamp as seen_time,
+                   movies.title as title,
+                   movies.original_title as original_title,
+                   movies.runtime as runtime,
+                   movies.poster_path as poster_path
             FROM seen_movies
+            LEFT JOIN movies
+            ON seen_movies.movie_id = movies.movie_id
             WHERE user_id = (:user_id)
+            ORDER BY seen_time DESC;
         ';
         $statement = $this->connect()->prepare($sql);
         $statement->execute([
@@ -56,9 +65,37 @@ class User extends Dbh {
 
     function getLastSeenMovies() {
         $sql = '
-            SELECT movie_id
+            SELECT seen_movies.user_id as user_id, seen_movies.movie_id as movie_id, seen_movies.timestamp as seen_time, movies.title as title, movies.poster_path as poster_path
             FROM seen_movies
+            LEFT JOIN movies
+            ON seen_movies.movie_id = movies.movie_id
             WHERE user_id = (:user_id)
+            ORDER BY seen_time DESC
+            LIMIT 10;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetchAll();
+    }
+
+    function getLastSeenEpisodes() {
+        $sql = '
+            SELECT tv_shows.id as show_id,
+            tv_shows.name as show_name,
+            tv_shows.poster_path as poster_path,
+            tv_show_episodes.name as episode_name,
+            seen_episodes.timestamp as seen_time,
+            tv_show_episodes.season_number as season_number,
+            tv_show_episodes.episode_number as episode_number
+            FROM seen_episodes
+            LEFT JOIN tv_show_episodes
+            ON seen_episodes.id = tv_show_episodes.id
+            LEFT JOIN tv_shows
+            ON tv_show_episodes.show_id = tv_shows.id
+            WHERE user_id = (:user_id)
+            ORDER BY seen_time DESC
             LIMIT 10;
         ';
         $statement = $this->connect()->prepare($sql);
