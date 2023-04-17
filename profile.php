@@ -49,6 +49,7 @@ if ($lastSeenMoviesData) {
         echo '</div>';
         echo '</div>';
     }
+    echo '<a href="seenmovies.php?user_id=' . $_SESSION['user_id'] .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých filmů <i class="bi bi-arrow-right"></i></a>';
     echo '</div>';
 }
 
@@ -93,6 +94,7 @@ foreach ($lastSeenEpisodesData as $seenEpisode) {
     echo '</div>';
     echo '</div>';
 }
+echo '<a href="seenepisodes.php?user_id=' . $_SESSION['user_id'] .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých epizod <i class="bi bi-arrow-right"></i></a>';
 echo '</div>';
 include 'includes/footer.inc.php';
 ?>
