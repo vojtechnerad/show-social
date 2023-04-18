@@ -1,5 +1,6 @@
 <?php
 require_once 'TmdbApi.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/dbh.class.php';
 class Movie extends TmdbApi {
     private $movieId;
 

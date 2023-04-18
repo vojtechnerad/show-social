@@ -1,8 +1,8 @@
 <?php
+session_start();
 require_once $_SERVER['DOCUMENT_ROOT'].'/includes/dbconn.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/classes/Movie.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
-session_start();
 
 header("Access-Control-Allow-Origin: *");
 $method = $_SERVER['REQUEST_METHOD'];

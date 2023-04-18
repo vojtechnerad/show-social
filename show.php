@@ -4,6 +4,7 @@
  */
 session_start();
 require_once 'classes/TvShow.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
 require_once 'includes/dbconn.inc.php';
 
 
@@ -58,6 +59,19 @@ if ($tvShowData['homepage']) {
 
 if ($tvShowData['overview']) {
     echo '<p>' . $tvShowData['overview'] . '</p>';
+}
+
+// Button area
+if (isset($_SESSION['user_id'])) {
+    $user = new User($_SESSION['user_id']);
+    echo '<div class="btn-group" role="group" aria-label="Tlačítka filmy">';
+    $isBookmarkedByUser = $user->hasUserBookmarkedTvShow($tvShowData['id']);
+    if ($isBookmarkedByUser) {
+        echo '<button id="changeBookmarkStatusBtn" class="btn btn-success" onclick="bookmarkTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-bookmark-fill"></i> Založeno</button>';
+    } else {
+        echo '<button id="changeBookmarkStatusBtn" class="btn btn-secondary" onclick="bookmarkTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-bookmark"></i> Založit</button>';
+    }
+    echo '</div>';
 }
 echo '</div>';
 echo '<div class="col-4">';
@@ -177,6 +191,56 @@ echo '</div>';
                     }
                 }).showToast();
             }
+        }
+    }
+
+    async function bookmarkTvShow(movieId) {
+        const request = await fetch("/api/show-change-bookmark.php", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "showId": movieId,
+            })
+        });
+        const response = await request.json();
+
+        console.log(response);
+
+        if (response['successfulChange']) {
+            const button = document.getElementById('changeBookmarkStatusBtn');
+
+            if (response['newSeenStatus']) {
+                button.innerHTML = '<i class="bi bi-bookmark-fill"></i> Založeno';
+                button.classList = 'btn btn-success';
+            } else {
+                button.innerHTML = '<i class="bi bi-bookmark"></i> Založit';
+                button.classList = 'btn btn-secondary';
+            }
+
+            Toastify({
+                text: 'Změna úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Nastala chyba - seriál pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
         }
     }
 </script>

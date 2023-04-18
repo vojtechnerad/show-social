@@ -25,16 +25,26 @@ if (isset($_GET['id'])) {
             echo '<p><i class="bi bi-calendar-event-fill"></i> ' . date_format($releaseDate, 'd.m.Y') . '</p>';
             echo '<p><i class="bi bi-clock-fill"></i> ' . $movieDetails->runtime . ' minut</p>';
 
-            // Zhlédnout button
+            // Buttony
             if (isset($_SESSION['user_id'])) {
+                echo '<div class="btn-group" role="group" aria-label="Tlačítka filmy">';
                 $user = new User($_SESSION['user_id']);
+
                 $isSeenByUser = $user->hasUserSeenMovie($movieId);
                 $buttonClass = '';
                 if ($isSeenByUser) {
-                    echo '<button id="changeStatusBtn" class="btn btn-success" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zhlédnuto</button>';
+                    echo '<button id="changeStatusBtn" class="btn btn-success" onclick="markMovieAsSeen(' . $movieDetails->id . ')"><i class="bi bi-eye-fill"></i> Zhlédnuto</button>';
                 } else {
-                    echo '<button id="changeStatusBtn" class="btn btn-secondary" onclick="markMovieAsSeen(' . $movieDetails->id . ')">Zapsat</button>';
+                    echo '<button id="changeStatusBtn" class="btn btn-secondary" onclick="markMovieAsSeen(' . $movieDetails->id . ')"><i class="bi bi-eye"></i> Zapsat</button>';
                 }
+                $isBookmarkedByUser = $user->hasUserBookmarkedMovie($movieId);
+                $bookmarkButtonClass = '';
+                if ($isBookmarkedByUser) {
+                    echo '<button id="changeBookmarkStatusBtn" class="btn btn-success" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark-fill"></i> Založeno</button>';
+                } else {
+                    echo '<button id="changeBookmarkStatusBtn" class="btn btn-secondary" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark"></i> Založit</button>';
+                }
+                echo '</div>';
             }
 
             echo '</div>';
@@ -71,10 +81,10 @@ if (isset($_GET['id'])) {
             let bingeMeterClass = '';
 
             if (response['newSeenStatus']) {
-                button.innerText = 'Zhlédnuto';
+                button.innerHTML = '<i class="bi bi-eye-fill"></i> Zhlédnuto';
                 button.classList = 'btn btn-success';
             } else {
-                button.innerText = 'Zapsat';
+                button.innerHTML = '<i class="bi bi-eye"></i></i> Zapsat';
                 button.classList = 'btn btn-secondary';
             }
 
@@ -87,6 +97,56 @@ if (isset($_GET['id'])) {
                 bingeMeterClass = 'danger';
             }
             bingeMeterButton.classList = 'btn btn-' + bingeMeterClass;
+
+            Toastify({
+                text: 'Změna úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Nastala chyba - epizoda pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
+        }
+    }
+
+    async function bookmarkMovie(movieId) {
+        const request = await fetch("/api/movie-change-bookmark.php", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "movieId": movieId,
+            })
+        });
+        const response = await request.json();
+
+        console.log(response);
+
+        if (response['successfulChange']) {
+            const button = document.getElementById('changeBookmarkStatusBtn');
+
+            if (response['newSeenStatus']) {
+                button.innerHTML = '<i class="bi bi-bookmark-fill"></i> Založeno';
+                button.classList = 'btn btn-success';
+            } else {
+                button.innerHTML = '<i class="bi bi-bookmark"></i> Založit';
+                button.classList = 'btn btn-secondary';
+            }
 
             Toastify({
                 text: 'Změna úspěšně uložena',

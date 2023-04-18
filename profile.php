@@ -1,8 +1,7 @@
 <?php
+session_start();
 require 'classes/dbh.class.php';
 require 'classes/User.class.php';
-
-session_start();
 
 if (!$_SESSION['user_id']) {
     header('Location: signin.php');

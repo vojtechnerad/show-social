@@ -256,6 +256,82 @@ class User extends Dbh {
         }
     }
 
+    function hasUserBookmarkedMovie($movieId) {
+        $bookmarkedMovieStatement = $this->connect()->prepare('
+            SELECT timestamp
+            FROM bookmarked_movies
+            WHERE user_id = (:user_id) and movie_id = (:movie_id)
+            LIMIT 1;
+        ');
+        $bookmarkedMovieStatement->execute([
+            ':user_id' => $this->id,
+            ':movie_id' => $movieId,
+        ]);
+
+        $bookmarkedMovieData = $bookmarkedMovieStatement->fetch();
+
+        if (@$bookmarkedMovieData['timestamp']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function hasUserBookmarkedTvShow($showId) {
+        $bookmarkedShowStatement = $this->connect()->prepare('
+            SELECT timestamp
+            FROM bookmarked_tv_shows
+            WHERE user_id = (:user_id) and show_id = (:show_id)
+            LIMIT 1;
+        ');
+        $bookmarkedShowStatement->execute([
+            ':user_id' => $this->id,
+            ':show_id' => $showId,
+        ]);
+
+        $bookmarkedShowData = $bookmarkedShowStatement->fetch();
+
+        if (@$bookmarkedShowData['timestamp']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function bookmarkedMovies() {
+        $bookmarkedMoviesStatement = $this->connect()->prepare('
+            SELECT movies.movie_id, movies.title, movies.original_title, movies.poster_path, bookmarked_movies.timestamp
+            FROM bookmarked_movies
+            LEFT JOIN movies
+            ON bookmarked_movies.movie_id = movies.movie_id
+            WHERE user_id = (:user_id)
+            ORDER BY bookmarked_movies.timestamp;
+        ');
+
+        $bookmarkedMoviesStatement->execute([
+            ':user_id' => $this->id
+        ]);
+        $bookmarkedMoviesData = $bookmarkedMoviesStatement->fetchAll();
+        return $bookmarkedMoviesData;
+    }
+
+    function bookmarkedTvShows() {
+        $bookmarkedTvShowsStatement = $this->connect()->prepare('
+            SELECT tv_shows.id as show_id, tv_shows.name, tv_shows.original_name, tv_shows.poster_path, bookmarked_tv_shows.timestamp
+            FROM bookmarked_tv_shows
+            LEFT JOIN tv_shows
+            ON bookmarked_tv_shows.show_id = tv_shows.id
+            WHERE user_id = (:user_id)
+            ORDER BY bookmarked_tv_shows.timestamp;
+        ');
+
+        $bookmarkedTvShowsStatement->execute([
+            ':user_id' => $this->id
+        ]);
+        $bookmarkedTvShowsData = $bookmarkedTvShowsStatement->fetchAll();
+        return $bookmarkedTvShowsData;
+    }
+
     function getId() {
         return $this->id;
     }
