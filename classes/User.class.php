@@ -411,4 +411,38 @@ class User extends Dbh {
     function getId() {
         return $this->id;
     }
+
+    function movieRating($movieId) {
+        $movieRatingStatement = $this->connect()->prepare('
+            SELECT rating
+            FROM movie_ratings
+            WHERE user_id = (:user_id) AND movie_id = (:movie_id)
+            LIMIT 1;
+        ');
+
+        $movieRatingStatement->execute([
+            'user_id' => $_SESSION['user_id'],
+            'movie_id' => $movieId
+        ]);
+
+        $movieRating = $movieRatingStatement->fetch();
+        return $movieRating;
+    }
+
+    function getUsersShowRating($showId) {
+        $showRatingStatement = $this->connect()->prepare('
+            SELECT rating
+            FROM show_ratings
+            WHERE user_id = (:user_id) AND show_id = (:show_id)
+            LIMIT 1;
+        ');
+
+        $showRatingStatement->execute([
+            'user_id' => $_SESSION['user_id'],
+            'show_id' => $showId
+        ]);
+
+        $showRating = $showRatingStatement->fetch();
+        return $showRating;
+    }
 }

@@ -19,4 +19,24 @@ class Movie extends TmdbApi {
         $response_data = json_decode($json_data);
         return $response_data;
     }
+
+    public function getMovieRating($movieId) {
+        $movieRatingStatement = $this->connect()->prepare('
+            SELECT AVG(rating) as rating
+            FROM movie_ratings
+            WHERE movie_id = (:movie_id);
+        ');
+
+        $movieRatingStatement->execute([
+            'movie_id' => $movieId
+        ]);
+
+        $movieRating = $movieRatingStatement->fetch();
+
+        if ($movieRating['rating']) {
+            return round($movieRating['rating'], 1) . ' %';
+        } else {
+            return "Nehodnoceno";
+        }
+    }
 }

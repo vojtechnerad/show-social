@@ -61,6 +61,13 @@ if ($tvShowData['overview']) {
     echo '<p>' . $tvShowData['overview'] . '</p>';
 }
 
+$tvShowRating = $tvShow->getTvShowRating($tvShowData['id']);
+
+echo '<div class="mb-2">';
+echo '<span><i class="bi bi-star-half"></i> Hodnocení: </span>';
+echo '<span id="rating-text">' . $tvShowRating . '</span>';
+echo '</div>';
+
 // Button area
 if (isset($_SESSION['user_id'])) {
     $user = new User($_SESSION['user_id']);
@@ -78,6 +85,15 @@ if (isset($_SESSION['user_id'])) {
     } else {
         echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-star"></i> Oblíbit</button>';
     }
+    echo '</div>';
+
+    // Hodnocení
+    $rating = $user->getUsersShowRating($tvShowData['id']);
+    $ratingAttribute = $rating != null ? 'value="' . $rating['rating'] . '"' : '';
+    echo '<div class="input-group mb-3">';
+    echo '<input type="number" class="form-control" id="input-rate-show" ' . $ratingAttribute . ' placeholder="Zatím nehodnoceno" min="0" step="1" max="100">';
+    echo '<span class="input-group-text">%</span>';
+    echo '<button class="btn btn-warning" type="button" id="button-rate-show" onclick="rateShow(' . $tvShowData['id'] . ')"><i class="bi bi-star-half"></i> Hodnotit</button>';
     echo '</div>';
 }
 echo '</div>';
@@ -288,6 +304,55 @@ echo '</div>';
         } else {
             Toastify({
                 text: 'Nastala chyba - seriál pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
+        }
+    }
+
+    async function rateShow(showId) {
+        let rating = document.getElementById('input-rate-show').value;
+
+        // Kontrola celočíslené hodnoty mezi 0 a 100 včetně
+        if ((rating && Number.isInteger(rating % 1) && (rating >= 0 && rating <= 100)) || rating == "") {
+            if (rating) {
+                rating = +rating;
+            }
+            const request = await fetch("/api/rate-show.php", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "showId": showId,
+                    "rating": rating
+                })
+            });
+            const response = await request.json();
+
+            if (response) {
+                document.getElementById('rating-text').innerText = response['newServerRating'];
+            }
+
+            Toastify({
+                text: 'Změna hodnocení úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Špatná hodnota hodnocení, zadejte hodnotu mezi 0 a 100!',
                 duration: 2000,
                 newWindow: false,
                 gravity: "bottom",

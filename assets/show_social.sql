@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 19, 2023 at 02:10 AM
+-- Generation Time: Apr 20, 2023 at 12:15 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -41,8 +41,9 @@ INSERT INTO `bookmarked_movies` (`user_id`, `movie_id`, `timestamp`) VALUES
 (1, 76600, '2023-04-18 23:23:48'),
 (1, 502356, '2023-04-18 23:23:44'),
 (1, 594767, '2023-04-18 23:23:46'),
-(1, 603692, '2023-04-18 23:23:52'),
+(1, 603692, '2023-04-19 16:05:03'),
 (1, 677179, '2023-04-18 23:23:50'),
+(1, 700391, '2023-04-19 17:31:20'),
 (3, 76600, '2023-04-18 23:27:36'),
 (3, 677179, '2023-04-18 23:27:34'),
 (3, 700391, '2023-04-18 23:27:38');
@@ -70,9 +71,12 @@ INSERT INTO `bookmarked_tv_shows` (`user_id`, `show_id`, `timestamp`) VALUES
 (1, 82856, '2023-04-18 23:15:06'),
 (1, 88329, '2023-04-18 23:16:47'),
 (1, 94605, '2023-04-18 23:16:57'),
+(1, 196080, '2023-04-19 22:08:26'),
 (3, 82856, '2023-04-18 23:54:03'),
+(3, 85328, '2023-04-19 00:39:04'),
 (3, 100088, '2023-04-19 00:09:30'),
-(3, 196080, '2023-04-18 23:27:47');
+(3, 196080, '2023-04-18 23:27:47'),
+(3, 209085, '2023-04-19 00:38:41');
 
 -- --------------------------------------------------------
 
@@ -92,7 +96,9 @@ CREATE TABLE `favorite_movies` (
 
 INSERT INTO `favorite_movies` (`user_id`, `movie_id`, `timestamp`) VALUES
 (3, 76600, '2023-04-19 00:08:25'),
-(3, 677179, '2023-04-19 00:08:33');
+(3, 677179, '2023-04-19 00:08:33'),
+(1, 700391, '2023-04-19 13:24:58'),
+(1, 603692, '2023-04-19 13:35:31');
 
 -- --------------------------------------------------------
 
@@ -111,7 +117,10 @@ CREATE TABLE `favorite_tv_shows` (
 --
 
 INSERT INTO `favorite_tv_shows` (`user_id`, `show_id`, `timestamp`) VALUES
+(1, 82856, '2023-04-19 18:48:57'),
+(1, 196080, '2023-04-19 22:08:26'),
 (3, 82856, '2023-04-18 23:54:04'),
+(3, 85328, '2023-04-19 00:39:04'),
 (3, 100088, '2023-04-19 00:09:29'),
 (3, 203057, '2023-04-19 00:00:55');
 
@@ -185,9 +194,35 @@ INSERT INTO `movies` (`movie_id`, `title`, `original_title`, `overview`, `poster
 (640146, 'Ant-Man a Wasp: Quantumania', 'Ant-Man and the Wasp: Quantumania', 'Scott Lang a Hope Van Dyne spolu s Hankem Pymem a Janet Van Dyne prozkoumávají Quantum Realm, kde interagují s podivnými tvory a vydávají se na dobrodružství, které přesahuje hranice toho, co považovali za možné.', '/jgyhDWuiqD9HNwteJ7TRaOHK3u.jpg', '2023-02-15', 125),
 (677179, 'Creed III', 'Creed III', 'Poté, co Adonis Creed ovládl svět boxu, se mu daří jak v kariéře, tak v rodinném životě. Když se po dlouhém trestu ve vězení znovu objeví jeho přítel z dětství a bývalý boxerský zázrak Damian, touží dokázat, že si zaslouží svou šanci v ringu. Konfrontace mezi bývalými přáteli je víc než pouhý zápas. Aby Adonis vyrovnal skóre, musí dát v sázku svou budoucnost a utkat se s Damianem - bojovníkem, který nemá co ztratit.', '/cvsXj3I9Q2iyyIo95AecSd1tad7.jpg', '2023-03-01', 116),
 (700391, '65', '65', 'Po nouzovém přistání na neznámé planetě pilot Mills rychle zjistí, že se nachází na Zemi... před 65 miliony let. Jelikož Mills a další přeživší, Koa mají na záchranu jediný pokus, musí se při svém epickém boji o přežití vydat napříč neznámou krajinou plnou nebezpečných prehistorických tvorů.', '/rzRb63TldOKdKydCvWJM8B6EkPM.jpg', '2023-03-02', 93),
+(736790, 'Chupa', 'Chupa', 'Osamělý kluk se na návštěvě u příbuzných v Mexiku skamarádí s mytickou bytostí, která se skrývá na dědově ranči, a zažije přitom úžasné dobrodružství.', '/ra3xm8KFAkwK0CdbPRkfYADJYTB.jpg', '2023-04-07', 95),
 (758323, 'Papežův vymítač', 'The Pope\'s Exorcist', 'Hlavní vatikánský exorcista Amorth se snaží vyšetřit děsivou posedlost mladého chlapce. Nakonec však odhalí po staletí staré spiknutí, které se Vatikán zoufale snažil utajit.', '/zRcghqFrWwQl9h5FDQW4y0gNVxp.jpg', '2023-04-05', 104),
 (980078, 'Medvídek Pú: Krev a med', 'Winnie the Pooh: Blood and Honey', 'Během svého dětství se Kryštůfek Robin skamarádil s Medvídkem Pů, Prasátkem a jejich přáteli, hrál s nimi hry a také jim obstarával jídlo. Jak ale rostl, jeho návštěvy, a s nimi spojené dodávky jídla, byly postupně stále méně časté, kvůli čemuž začali být Pú a ostatní stále více hladoví a zoufalí. Když Kryštůfek odešel na univerzitu, návštěvy přestaly úplně, což vyústilo v to, že Pú a Prasátko zdivočeli a utrhli se z řetězu, a poté zabili a snědli své kamarády. Nyní se po dlouhé době Kryštůfek Robin vrací do lesa, spolu se svou manželkou, aby jí představil své kamarády z dětství. Ti se však cítí zrazeni a po znepřátelení skupiny vysokoškolaček z blízké chaty se vydávají na cestu krvavého masakru.', '/x0pNA86LeWhwP406AKy3oiMZbHf.jpg', '2023-01-27', 84),
 (1033219, 'Attack on Titan', 'Attack on Titan', '', '/ay8SLFTMKzQ0i5ewOaGHz2bVuZL.jpg', '2022-09-30', 93);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `movie_ratings`
+--
+
+CREATE TABLE `movie_ratings` (
+  `user_id` int(11) NOT NULL,
+  `movie_id` int(11) NOT NULL,
+  `rating` tinyint(4) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `movie_ratings`
+--
+
+INSERT INTO `movie_ratings` (`user_id`, `movie_id`, `rating`, `timestamp`) VALUES
+(1, 1, 5, '2023-04-19 18:10:12'),
+(1, 76600, 0, '2023-04-19 22:13:36'),
+(1, 700391, 20, '2023-04-19 18:31:17'),
+(1, 736790, 50, '2023-04-19 19:04:22'),
+(3, 36993, 10, '2023-04-19 22:14:01'),
+(3, 76600, 50, '2023-04-19 22:14:12');
 
 -- --------------------------------------------------------
 
@@ -262,6 +297,7 @@ INSERT INTO `seen_episodes` (`id`, `timestamp`, `user_id`) VALUES
 (3749414, '2023-04-16 01:53:27', 1),
 (3749415, '2023-04-16 01:52:34', 1),
 (3918149, '2023-04-16 00:32:01', 1),
+(3918149, '2023-04-19 00:38:43', 3),
 (4237597, '2023-04-16 02:00:12', 1);
 
 -- --------------------------------------------------------
@@ -296,9 +332,9 @@ INSERT INTO `seen_movies` (`user_id`, `movie_id`, `timestamp`) VALUES
 (1, 502356, '2023-04-18 00:53:16'),
 (1, 593643, '2023-04-10 17:42:48'),
 (1, 594767, '2023-04-13 01:15:20'),
-(1, 603692, '2023-04-16 15:09:38'),
+(1, 603692, '2023-04-19 15:35:33'),
 (1, 640146, '2023-04-10 18:02:09'),
-(1, 700391, '2023-04-16 04:08:32'),
+(1, 700391, '2023-04-19 19:31:18'),
 (1, 980078, '2023-04-10 18:02:13'),
 (3, 496, '2023-04-13 23:40:29'),
 (3, 76600, '2023-04-13 23:38:39'),
@@ -307,6 +343,28 @@ INSERT INTO `seen_movies` (`user_id`, `movie_id`, `timestamp`) VALUES
 (3, 603692, '2023-04-13 23:38:45'),
 (3, 700391, '2023-04-17 15:43:07'),
 (3, 758323, '2023-04-17 15:43:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `show_ratings`
+--
+
+CREATE TABLE `show_ratings` (
+  `user_id` int(11) NOT NULL,
+  `show_id` bigint(11) NOT NULL,
+  `rating` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `show_ratings`
+--
+
+INSERT INTO `show_ratings` (`user_id`, `show_id`, `rating`, `timestamp`) VALUES
+(1, 82856, 20, '2023-04-19 20:04:34'),
+(1, 196080, 92, '2023-04-19 22:08:44'),
+(3, 196080, 13, '2023-04-19 22:06:00');
 
 -- --------------------------------------------------------
 
@@ -531,6 +589,12 @@ ALTER TABLE `movies`
   ADD PRIMARY KEY (`movie_id`);
 
 --
+-- Indexes for table `movie_ratings`
+--
+ALTER TABLE `movie_ratings`
+  ADD PRIMARY KEY (`user_id`,`movie_id`);
+
+--
 -- Indexes for table `seen_episodes`
 --
 ALTER TABLE `seen_episodes`
@@ -541,6 +605,12 @@ ALTER TABLE `seen_episodes`
 --
 ALTER TABLE `seen_movies`
   ADD PRIMARY KEY (`user_id`,`movie_id`);
+
+--
+-- Indexes for table `show_ratings`
+--
+ALTER TABLE `show_ratings`
+  ADD PRIMARY KEY (`user_id`,`show_id`);
 
 --
 -- Indexes for table `tv_shows`

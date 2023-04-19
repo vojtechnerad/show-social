@@ -25,8 +25,16 @@ if (isset($_GET['id'])) {
             echo '<p><i class="bi bi-calendar-event-fill"></i> ' . date_format($releaseDate, 'd.m.Y') . '</p>';
             echo '<p><i class="bi bi-clock-fill"></i> ' . $movieDetails->runtime . ' minut</p>';
 
+            $movieRating = $movie->getMovieRating($movieId);
+
+            echo '<div class="mb-2">';
+            echo '<span><i class="bi bi-star-half"></i> Hodnocení: </span>';
+            echo '<span id="rating-text">' . $movieRating . '</span>';
+            echo '</div>';
+
             // Buttony
             if (isset($_SESSION['user_id'])) {
+                echo '<div="row row-cols-2">';
                 echo '<div class="btn-group" role="group" aria-label="Tlačítka filmy">';
                 $user = new User($_SESSION['user_id']);
 
@@ -39,17 +47,26 @@ if (isset($_GET['id'])) {
 
                 $isBookmarkedByUser = $user->hasUserBookmarkedMovie($movieId);
                 if ($isBookmarkedByUser) {
-                    echo '<button id="changeBookmarkStatusBtn" class="btn btn-success" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark-fill"></i> Založeno</button>';
+                    echo '<button id="changeBookmarkStatusBtn" class="btn btn-primary" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark-fill"></i> Založeno</button>';
                 } else {
                     echo '<button id="changeBookmarkStatusBtn" class="btn btn-secondary" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark"></i> Založit</button>';
                 }
 
                 $isUsersFavorite = $user->hasUserFavoriteMovie($movieId);
                 if ($isUsersFavorite) {
-                    echo '<button id="changeFavoriteStatusBtn" class="btn btn-warning" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-star-fill"></i> Oblíbené</button>';
+                    echo '<button id="changeFavoriteStatusBtn" class="btn btn-danger" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-heart-fill"></i> Oblíbené</button>';
                 } else {
-                    echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-star"></i> Oblíbit</button>';
+                    echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-heart"></i> Oblíbit</button>';
                 }
+                echo '</div>';
+
+                // Hodnocení
+                $rating = $user->movieRating($movieId);
+                $ratingAttribute = $rating != null ? 'value="' . $rating['rating'] . '"' : '';
+                echo '<div class="input-group mb-3">';
+                echo '<input type="number" class="form-control" id="input-rate-movie" ' . $ratingAttribute . ' placeholder="Zatím nehodnoceno" min="0" step="1" max="100" pattern="[0-9]" aria-label="Recipients username" aria-describedby="button-addon2">';
+                echo '<span class="input-group-text">%</span>';
+                echo '<button class="btn btn-warning" type="button" id="button-rate-movie" onclick="rateMovie(' . $movieDetails->id . ')"><i class="bi bi-star-half"></i> Hodnotit</button>';
                 echo '</div>';
             }
 
@@ -59,6 +76,7 @@ if (isset($_GET['id'])) {
             echo '<img src="https://www.themoviedb.org/t/p/w500' . $movieDetails->poster_path . '" class="rounded float-start img-fluid" alt="Plakát filmu ' . $movieDetails->title . '">';
             echo '</div>';
 
+            echo '</div>';
             echo '</div>';
             echo '</div>';
         } else {
@@ -145,7 +163,7 @@ if (isset($_GET['id'])) {
 
             if (response['newSeenStatus']) {
                 button.innerHTML = '<i class="bi bi-bookmark-fill"></i> Založeno';
-                button.classList = 'btn btn-success';
+                button.classList = 'btn btn-primary';
             } else {
                 button.innerHTML = '<i class="bi bi-bookmark"></i> Založit';
                 button.classList = 'btn btn-secondary';
@@ -192,10 +210,10 @@ if (isset($_GET['id'])) {
             const button = document.getElementById('changeFavoriteStatusBtn');
 
             if (response['newSeenStatus']) {
-                button.innerHTML = '<i class="bi bi-star-fill"></i> Oblíbené';
-                button.classList = 'btn btn-warning';
+                button.innerHTML = '<i class="bi bi-heart-fill"></i> Oblíbené';
+                button.classList = 'btn btn-danger';
             } else {
-                button.innerHTML = '<i class="bi bi-star"></i> Oblíbit';
+                button.innerHTML = '<i class="bi bi-heart"></i> Oblíbit';
                 button.classList = 'btn btn-secondary';
             }
 
@@ -212,6 +230,55 @@ if (isset($_GET['id'])) {
         } else {
             Toastify({
                 text: 'Nastala chyba - epizoda pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
+        }
+    }
+
+    async function rateMovie(movieId) {
+        let rating = document.getElementById('input-rate-movie').value;
+
+        // Kontrola celočíslené hodnoty mezi 0 a 100 včetně
+        if ((rating && Number.isInteger(rating % 1) && (rating >= 0 && rating <= 100)) || rating == "") {
+            if (rating) {
+                rating = +rating;
+            }
+            const request = await fetch("/api/rate-movie.php", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "movieId": movieId,
+                    "rating": rating
+                })
+            });
+            const response = await request.json();
+
+            if (response) {
+                document.getElementById('rating-text').innerText = response['newServerRating'];
+            }
+
+            Toastify({
+                text: 'Změna hodnocení úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Špatná hodnota hodnocení, zadejte hodnotu mezi 0 a 100!',
                 duration: 2000,
                 newWindow: false,
                 gravity: "bottom",

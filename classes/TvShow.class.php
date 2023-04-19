@@ -39,4 +39,24 @@ class TvShow extends TmdbApi {
         $response_data = json_decode($json_data);
         return (array) $response_data;
     }
+
+    public function getTvShowRating($tvShowId) {
+        $tvShowRatingStatement = $this->connect()->prepare('
+            SELECT AVG(rating) as rating
+            FROM show_ratings
+            WHERE show_id = (:show_id);
+        ');
+
+        $tvShowRatingStatement->execute([
+            'show_id' => $tvShowId
+        ]);
+
+        $tvShowRating = $tvShowRatingStatement->fetch();
+
+        if ($tvShowRating['rating']) {
+            return round($tvShowRating['rating'], 1) . ' %';
+        } else {
+            return "Nehodnoceno";
+        }
+    }
 }
