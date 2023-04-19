@@ -109,6 +109,7 @@
                     echo '<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>';
                     echo '<ul class="dropdown-menu dropdown-menu-end">';
                     echo '<li><a class="dropdown-item" href="../bookmarks.php"><i class="bi bi-bookmarks-fill"></i> Založené</a></li>';
+                    echo '<li><a class="dropdown-item" href="../favorites.php"><i class="bi bi-star-fill"></i> Oblíbené</a></li>';
                     echo '<li><hr class="dropdown-divider"></li>';
                     echo '<li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Nastavení profilu</a></li>';
                     echo '<li><hr class="dropdown-divider"></li>';

@@ -31,18 +31,24 @@ if (isset($_GET['id'])) {
                 $user = new User($_SESSION['user_id']);
 
                 $isSeenByUser = $user->hasUserSeenMovie($movieId);
-                $buttonClass = '';
                 if ($isSeenByUser) {
                     echo '<button id="changeStatusBtn" class="btn btn-success" onclick="markMovieAsSeen(' . $movieDetails->id . ')"><i class="bi bi-eye-fill"></i> Zhlédnuto</button>';
                 } else {
                     echo '<button id="changeStatusBtn" class="btn btn-secondary" onclick="markMovieAsSeen(' . $movieDetails->id . ')"><i class="bi bi-eye"></i> Zapsat</button>';
                 }
+
                 $isBookmarkedByUser = $user->hasUserBookmarkedMovie($movieId);
-                $bookmarkButtonClass = '';
                 if ($isBookmarkedByUser) {
                     echo '<button id="changeBookmarkStatusBtn" class="btn btn-success" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark-fill"></i> Založeno</button>';
                 } else {
                     echo '<button id="changeBookmarkStatusBtn" class="btn btn-secondary" onclick="bookmarkMovie(' . $movieDetails->id . ')"><i class="bi bi-bookmark"></i> Založit</button>';
+                }
+
+                $isUsersFavorite = $user->hasUserFavoriteMovie($movieId);
+                if ($isUsersFavorite) {
+                    echo '<button id="changeFavoriteStatusBtn" class="btn btn-warning" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-star-fill"></i> Oblíbené</button>';
+                } else {
+                    echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-star"></i> Oblíbit</button>';
                 }
                 echo '</div>';
             }
@@ -73,7 +79,6 @@ if (isset($_GET['id'])) {
             })
         });
         const response = await request.json();
-
 
         if (response['successfulChange']) {
             const button = document.getElementById('changeStatusBtn');
@@ -135,8 +140,6 @@ if (isset($_GET['id'])) {
         });
         const response = await request.json();
 
-        console.log(response);
-
         if (response['successfulChange']) {
             const button = document.getElementById('changeBookmarkStatusBtn');
 
@@ -145,6 +148,54 @@ if (isset($_GET['id'])) {
                 button.classList = 'btn btn-success';
             } else {
                 button.innerHTML = '<i class="bi bi-bookmark"></i> Založit';
+                button.classList = 'btn btn-secondary';
+            }
+
+            Toastify({
+                text: 'Změna úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Nastala chyba - epizoda pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
+        }
+    }
+
+    async function favoriteMovie(movieId) {
+        const request = await fetch("/api/movie-change-favorite.php", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "movieId": movieId,
+            })
+        });
+        const response = await request.json();
+
+        if (response['successfulChange']) {
+            const button = document.getElementById('changeFavoriteStatusBtn');
+
+            if (response['newSeenStatus']) {
+                button.innerHTML = '<i class="bi bi-star-fill"></i> Oblíbené';
+                button.classList = 'btn btn-warning';
+            } else {
+                button.innerHTML = '<i class="bi bi-star"></i> Oblíbit';
                 button.classList = 'btn btn-secondary';
             }
 

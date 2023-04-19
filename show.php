@@ -71,6 +71,13 @@ if (isset($_SESSION['user_id'])) {
     } else {
         echo '<button id="changeBookmarkStatusBtn" class="btn btn-secondary" onclick="bookmarkTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-bookmark"></i> Založit</button>';
     }
+
+    $isUsersFavorite = $user->hasUserFavoriteTvShow($tvShowData['id']);
+    if ($isUsersFavorite) {
+        echo '<button id="changeFavoriteStatusBtn" class="btn btn-warning" onclick="favoriteTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-star-fill"></i> Oblíbené</button>';
+    } else {
+        echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-star"></i> Oblíbit</button>';
+    }
     echo '</div>';
 }
 echo '</div>';
@@ -217,6 +224,54 @@ echo '</div>';
                 button.classList = 'btn btn-success';
             } else {
                 button.innerHTML = '<i class="bi bi-bookmark"></i> Založit';
+                button.classList = 'btn btn-secondary';
+            }
+
+            Toastify({
+                text: 'Změna úspěšně uložena',
+                duration: 1000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#158000"
+                }
+            }).showToast();
+        } else {
+            Toastify({
+                text: 'Nastala chyba - seriál pravěpodobně nemá všechny potřebná data',
+                duration: 2000,
+                newWindow: false,
+                gravity: "bottom",
+                position: "center",
+                style: {
+                    background: "#80000b"
+                }
+            }).showToast();
+        }
+    }
+
+    async function favoriteTvShow(movieId) {
+        const request = await fetch("/api/show-change-favorite.php", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "showId": movieId,
+            })
+        });
+        const response = await request.json();
+
+        if (response['successfulChange']) {
+            const button = document.getElementById('changeFavoriteStatusBtn');
+
+            if (response['newSeenStatus']) {
+                button.innerHTML = '<i class="bi bi-star-fill"></i> Oblíbené';
+                button.classList = 'btn btn-warning';
+            } else {
+                button.innerHTML = '<i class="bi bi-star"></i> Oblíbit';
                 button.classList = 'btn btn-secondary';
             }
 

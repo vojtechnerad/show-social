@@ -305,7 +305,7 @@ class User extends Dbh {
             LEFT JOIN movies
             ON bookmarked_movies.movie_id = movies.movie_id
             WHERE user_id = (:user_id)
-            ORDER BY bookmarked_movies.timestamp;
+            ORDER BY bookmarked_movies.timestamp DESC;
         ');
 
         $bookmarkedMoviesStatement->execute([
@@ -322,7 +322,7 @@ class User extends Dbh {
             LEFT JOIN tv_shows
             ON bookmarked_tv_shows.show_id = tv_shows.id
             WHERE user_id = (:user_id)
-            ORDER BY bookmarked_tv_shows.timestamp;
+            ORDER BY bookmarked_tv_shows.timestamp DESC;
         ');
 
         $bookmarkedTvShowsStatement->execute([
@@ -330,6 +330,82 @@ class User extends Dbh {
         ]);
         $bookmarkedTvShowsData = $bookmarkedTvShowsStatement->fetchAll();
         return $bookmarkedTvShowsData;
+    }
+
+    function hasUserFavoriteMovie($movieId) {
+        $favoriteMovieStatement = $this->connect()->prepare('
+            SELECT timestamp
+            FROM favorite_movies
+            WHERE user_id = (:user_id) and movie_id = (:movie_id)
+            LIMIT 1;
+        ');
+        $favoriteMovieStatement->execute([
+            ':user_id' => $this->id,
+            ':movie_id' => $movieId,
+        ]);
+
+        $favoriteMovieData = $favoriteMovieStatement->fetch();
+
+        if (@$favoriteMovieData['timestamp']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function hasUserFavoriteTvShow($showId) {
+        $favoriteShowStatement = $this->connect()->prepare('
+            SELECT timestamp
+            FROM favorite_tv_shows
+            WHERE user_id = (:user_id) and show_id = (:show_id)
+            LIMIT 1;
+        ');
+        $favoriteShowStatement->execute([
+            ':user_id' => $this->id,
+            ':show_id' => $showId,
+        ]);
+
+        $favoriteShowData = $favoriteShowStatement->fetch();
+
+        if (@$favoriteShowData['timestamp']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function favoriteMovies() {
+        $favoriteMoviesStatement = $this->connect()->prepare('
+            SELECT movies.movie_id, movies.title, movies.original_title, movies.poster_path, favorite_movies.timestamp
+            FROM favorite_movies
+            LEFT JOIN movies
+            ON favorite_movies.movie_id = movies.movie_id
+            WHERE user_id = (:user_id)
+            ORDER BY favorite_movies.timestamp DESC;
+        ');
+
+        $favoriteMoviesStatement->execute([
+            ':user_id' => $this->id
+        ]);
+        $favoriteMoviesData = $favoriteMoviesStatement->fetchAll();
+        return $favoriteMoviesData;
+    }
+
+    function favoriteTvShows() {
+        $favoriteTvShowsStatement = $this->connect()->prepare('
+            SELECT tv_shows.id as show_id, tv_shows.name, tv_shows.original_name, tv_shows.poster_path, favorite_tv_shows.timestamp
+            FROM favorite_tv_shows
+            LEFT JOIN tv_shows
+            ON favorite_tv_shows.show_id = tv_shows.id
+            WHERE user_id = (:user_id)
+            ORDER BY favorite_tv_shows.timestamp DESC;
+        ');
+
+        $favoriteTvShowsStatement->execute([
+            ':user_id' => $this->id
+        ]);
+        $favoriteTvShowsData = $favoriteTvShowsStatement->fetchAll();
+        return $favoriteTvShowsData;
     }
 
     function getId() {
