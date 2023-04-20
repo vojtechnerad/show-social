@@ -88,10 +88,10 @@ if (isset($_GET['id'])) {
                     foreach ($friendsRating as $rating) {
                         echo '<a href="./user.php?id=' . $rating['friend_id'] . '" class="list-group-item list-group-item-action">';
                         echo '<div class="d-flex w-100 justify-content-between">';
-                        echo '<p class="mb-1 fw-bold">' . $rating['full_name'] . ' (@' . $rating['user_name']  . ')</p>';
+                        echo '<p class="fw-bold">' . $rating['full_name'] . ' (@' . $rating['user_name']  . ')</p>';
                         $bookmarkedTime = date_create($rating['timestamp']);
                         echo '<small class="text-secondary">' . date_format($bookmarkedTime, 'd.m.Y H:i') . '</small>';
-                        echo '<small class="fw-bold">' . $rating['rating'] . ' %</small>';
+                        echo '<p class="fw-bold">' . $rating['rating'] . ' %</p>';
                         echo '</div>';
                         echo '</a>';
                     }

@@ -147,9 +147,41 @@ foreach ($tvShowData['seasons'] as $season) {
     echo '</div>';
 }
 echo '</div>';
+echo '</div>';
+
+// Hodnocení přátel
+if (isset($user)) {
+    echo '<div class="row mb-5">';
+
+    echo '<h2>Hodnocení přátel</h2>';
+    $tvShowRating = $user->getTvShowRatingsOfFriends($tvShowData['id']);
+
+    echo '<div class="row row-cols-2 justify-content-center">';
+    echo '<div class="col">';
+    echo '<div class="list-group">';
+    if ($tvShowRating) {
+        foreach ($tvShowRating as $rating) {
+            echo '<a href="./user.php?id=' . $rating['friend_id'] . '" class="list-group-item list-group-item-action">';
+            echo '<div class="d-flex w-100 justify-content-between">';
+            echo '<p class="fw-bold">' . $rating['full_name'] . ' (@' . $rating['user_name']  . ')</p>';
+            $bookmarkedTime = date_create($rating['timestamp']);
+            echo '<small class="text-secondary">' . date_format($bookmarkedTime, 'd.m.Y H:i') . '</small>';
+            echo '<p class="fw-bold">' . $rating['rating'] . ' %</p>';
+            echo '</div>';
+            echo '</a>';
+        }
+    } else {
+        echo '<div class="list-group-item">Žádný z vašich přátel zatím seriál neohodnotil.</div>';
+    }
+    echo '</div>';
+    echo '</div>';
+    echo '</div>';
+
+    echo '</div>';
+
+    echo '</div>';
+}
 ?>
-</div>
-</div>
 
 <script>
     async function markEpisodeAsSeen(showId, seasonNumber, episodeNumber) {

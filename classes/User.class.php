@@ -218,6 +218,41 @@ class User extends Dbh {
         return $ratings;
     }
 
+    function getTvShowRatingsOfFriends($tvShowId) {
+        $ratingsStatement = $this->connect()->prepare('
+            SELECT
+                friend_id,
+                CONCAT(users.first_name, " " , users.last_name) as full_name,
+                users.user_name as user_name,
+                show_ratings.rating as rating,
+                show_ratings.timestamp as timestamp
+            FROM (
+                SELECT adresseeId as friend_id
+                FROM friendslist
+                WHERE isConfirmed = 1 AND requesterId = (:user_id)
+                UNION
+                SELECT requesterId as friend_id
+                FROM friendslist
+                WHERE isConfirmed = 1 AND adresseeId = (:user_id)
+            ) friends
+            LEFT JOIN users
+            ON friends.friend_id = users.id
+            INNER JOIN show_ratings
+            ON friends.friend_id = show_ratings.user_id
+            WHERE show_ratings.show_id = (:show_id)
+            ORDER BY show_ratings.timestamp DESC;
+        ');
+
+        $ratingsStatement->execute([
+            ':user_id' => $_SESSION['user_id'],
+            ':show_id' => $tvShowId
+        ]);
+
+        $ratings = $ratingsStatement->fetchAll();
+
+        return $ratings;
+    }
+
     function getIncomingFriendRequests() {
         $sql = '
             SELECT
