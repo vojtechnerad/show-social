@@ -175,7 +175,7 @@ class User extends Dbh {
         ');
 
         $friendslistStatement->execute([
-            '(:user_id)' => $_SESSION['user_id']
+            ':user_id' => $_SESSION['user_id']
         ]);
 
         $friendslist = $friendslistStatement->fetchAll();
@@ -605,6 +605,81 @@ class User extends Dbh {
 
         $episodeList = $episodeListStatement->fetchAll();
         return $episodeList;
+    }
+
+    function recommendMovie($targetUserId, $movieId, $description) {
+        $movieRecommendationStatement = $this->connect()->prepare('
+            REPLACE INTO movie_recommendations (source_user_id, target_user_id, movie_id, description)
+            VALUES (:source_user_id, :target_user_id, :movie_id, :description);
+        ');
+        $movieRecommendationStatement->execute([
+            ':source_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId,
+            ':movie_id' => $movieId,
+            ':description' => $description,
+        ]);
+    }
+
+    function isMovieRecommendedToUser($targetUserId, $movieId) {
+        $movieRecommendationStatement = $this->connect()->prepare('
+            SELECT timestamp, description
+            FROM movie_recommendations
+            WHERE source_user_id = (:source_user_id)
+            AND target_user_id = (:target_user_id)
+            AND movie_id = (:movie_id)
+            LIMIT 1;
+        ');
+        $movieRecommendationStatement->execute([
+            ':source_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId,
+            ':movie_id' => $movieId,
+        ]);
+
+        $movieRecommendation = $movieRecommendationStatement->fetch();
+
+        return $movieRecommendation;
+    }
+
+    function deleteMovieRecommendation($targetUserId, $movieId) {
+        $movieRecommendationStatement = $this->connect()->prepare('
+            DELETE FROM movie_recommendations
+            WHERE source_user_id = (:source_user_id)
+            AND target_user_id = (:target_user_id)
+            AND movie_id = (:movie_id);
+        ');
+        $movieRecommendationStatement->execute([
+            ':source_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId,
+            ':movie_id' => $movieId,
+        ]);
+    }
+
+    function getUsersMovieRecommendations() {
+        $movieRecommendationsStatement = $this->connect()->prepare('
+            SELECT
+                movie_recommendations.timestamp as timestamp,
+                movie_recommendations.description as description,
+                movies.movie_id as movie_id,
+                movies.title as title,
+                movies.original_title as original_title,
+                users.id as source_user_id,
+                CONCAT (users.first_name, " ", users.last_name) as full_name,
+                users.user_name as user_name
+            FROM movie_recommendations
+            LEFT JOIN movies
+            ON movie_recommendations.movie_id = movies.movie_id
+            LEFT JOIN users
+            ON movie_recommendations.source_user_id = users.id
+            WHERE movie_recommendations.target_user_id = (:user_id)
+            ORDER BY movie_recommendations.timestamp DESC;
+        ');
+        $movieRecommendationsStatement->execute([
+            ':user_id' => $_SESSION['user_id'],
+        ]);
+
+        $movieRecommendations = $movieRecommendationsStatement->fetchAll();
+
+        return $movieRecommendations;
     }
 
 

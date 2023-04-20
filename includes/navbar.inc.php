@@ -69,7 +69,15 @@
                     ?>
                     </a>
                 </li>
+                <?php
+                if (isset($_SESSION['user_id'])) {
+                    echo '<li class="nav-item">';
+                    echo '<a ' . (($active_page == 'recommendations') ? $active_link_classes : $nonactive_link_classes) . ' href="../recommendations.php"><i class="bi bi-hand-thumbs-up-fill"></i> Doporučené</a>';
+                    echo '</li>';
+                    }
+                ?>
             </ul>
+
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <?php

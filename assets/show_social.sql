@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2023 at 12:15 AM
+-- Generation Time: Apr 20, 2023 at 09:42 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -38,7 +38,6 @@ CREATE TABLE `bookmarked_movies` (
 --
 
 INSERT INTO `bookmarked_movies` (`user_id`, `movie_id`, `timestamp`) VALUES
-(1, 76600, '2023-04-18 23:23:48'),
 (1, 502356, '2023-04-18 23:23:44'),
 (1, 594767, '2023-04-18 23:23:46'),
 (1, 603692, '2023-04-19 16:05:03'),
@@ -191,6 +190,7 @@ INSERT INTO `movies` (`movie_id`, `title`, `original_title`, `overview`, `poster
 (593643, 'Menu', 'The Menu', 'Mladý pár cestuje na odlehlý ostrov, aby se najedl v luxusní restauraci, kde šéfkuchař připravil bohaté menu s několika šokujícími překvapeními.', '/zA9X8DpLSctaQvDvXPnm1RY2XZR.jpg', '2022-11-17', 107),
 (594767, 'Shazam! Hněv bohů', 'Shazam! Fury of the Gods', 'Billy Batson a jeho nevlastní sourozenci se stále učí skloubit životy teenagerů s kariérou superhrdinů. Když na Zemi ale dorazí trojice prastarých pomstychtivých bohyň, Billy a jeho rodina jsou vrženi do boje nejen o superschopnosti, ale i životy jich samých i celého světa.', '/gi7MmM19OKGvOw8xEnGSFvPCu2k.jpg', '2023-03-15', 130),
 (603692, 'John Wick: Kapitola 4', 'John Wick: Chapter 4', 'John Wick odhalí cestu, jak porazit Nejvyšší radu. Než se mu však podaří získat svobodu, musí čelit novému nepříteli, který má mocné spojence po celém světě. Bude to o to težší, že nová spojenectví mění staré přátele v nepřátele...', '/sIQ9Lqw1QVZPq4tVgbPcPoE38GM.jpg', '2023-03-22', 170),
+(638974, 'Vražda v Paříži', 'Murder Mystery 2', 'Z Nicka a Audrey Spitzových jsou soukromá očka na plný úvazek. Po jejich příteli se slehne zem a oni se připletou k mezinárodnímu pátrání po jeho únosci.', '/5wpVy0KUWzDKDKgrayM0Q8lXOiK.jpg', '2023-03-28', 91),
 (640146, 'Ant-Man a Wasp: Quantumania', 'Ant-Man and the Wasp: Quantumania', 'Scott Lang a Hope Van Dyne spolu s Hankem Pymem a Janet Van Dyne prozkoumávají Quantum Realm, kde interagují s podivnými tvory a vydávají se na dobrodružství, které přesahuje hranice toho, co považovali za možné.', '/jgyhDWuiqD9HNwteJ7TRaOHK3u.jpg', '2023-02-15', 125),
 (677179, 'Creed III', 'Creed III', 'Poté, co Adonis Creed ovládl svět boxu, se mu daří jak v kariéře, tak v rodinném životě. Když se po dlouhém trestu ve vězení znovu objeví jeho přítel z dětství a bývalý boxerský zázrak Damian, touží dokázat, že si zaslouží svou šanci v ringu. Konfrontace mezi bývalými přáteli je víc než pouhý zápas. Aby Adonis vyrovnal skóre, musí dát v sázku svou budoucnost a utkat se s Damianem - bojovníkem, který nemá co ztratit.', '/cvsXj3I9Q2iyyIo95AecSd1tad7.jpg', '2023-03-01', 116),
 (700391, '65', '65', 'Po nouzovém přistání na neznámé planetě pilot Mills rychle zjistí, že se nachází na Zemi... před 65 miliony let. Jelikož Mills a další přeživší, Koa mají na záchranu jediný pokus, musí se při svém epickém boji o přežití vydat napříč neznámou krajinou plnou nebezpečných prehistorických tvorů.', '/rzRb63TldOKdKydCvWJM8B6EkPM.jpg', '2023-03-02', 93),
@@ -218,11 +218,39 @@ CREATE TABLE `movie_ratings` (
 
 INSERT INTO `movie_ratings` (`user_id`, `movie_id`, `rating`, `timestamp`) VALUES
 (1, 1, 5, '2023-04-19 18:10:12'),
-(1, 76600, 0, '2023-04-19 22:13:36'),
+(1, 76600, 90, '2023-04-19 22:55:39'),
+(1, 603692, 50, '2023-04-20 01:02:48'),
 (1, 700391, 20, '2023-04-19 18:31:17'),
 (1, 736790, 50, '2023-04-19 19:04:22'),
+(2, 76600, 20, '2023-04-20 01:04:47'),
+(2, 502356, 50, '2023-04-20 01:04:39'),
 (3, 36993, 10, '2023-04-19 22:14:01'),
 (3, 76600, 50, '2023-04-19 22:14:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `movie_recommendations`
+--
+
+CREATE TABLE `movie_recommendations` (
+  `source_user_id` int(11) NOT NULL,
+  `target_user_id` int(11) NOT NULL,
+  `movie_id` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `description` varchar(250) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `movie_recommendations`
+--
+
+INSERT INTO `movie_recommendations` (`source_user_id`, `target_user_id`, `movie_id`, `timestamp`, `description`) VALUES
+(1, 2, 677179, '2023-04-20 19:22:11', 'Fakt super\r\n'),
+(1, 3, 677179, '2023-04-20 18:55:52', 'Je to fakt supr film!'),
+(3, 1, 638974, '2023-04-20 19:22:19', 'fakt supr'),
+(3, 1, 640146, '2023-04-20 19:30:58', 'konec byl fakt nečekanej! :-O'),
+(3, 2, 640146, '2023-04-20 19:30:35', 'Kone byl fakt nečekanej! :O');
 
 -- --------------------------------------------------------
 
@@ -261,6 +289,7 @@ INSERT INTO `seen_episodes` (`id`, `timestamp`, `user_id`) VALUES
 (1980404, '2023-04-16 01:16:58', 1),
 (1987335, '2023-04-16 01:16:59', 1),
 (2023593, '2023-04-16 01:17:00', 1),
+(2211892, '2023-04-20 01:05:22', 1),
 (2215166, '2023-04-16 02:00:01', 1),
 (2223971, '2023-04-16 02:00:02', 1),
 (2228037, '2023-04-13 21:43:27', 3),
@@ -296,8 +325,8 @@ INSERT INTO `seen_episodes` (`id`, `timestamp`, `user_id`) VALUES
 (3533659, '2023-04-17 22:53:56', 3),
 (3749414, '2023-04-16 01:53:27', 1),
 (3749415, '2023-04-16 01:52:34', 1),
-(3918149, '2023-04-16 00:32:01', 1),
 (3918149, '2023-04-19 00:38:43', 3),
+(4089876, '2023-04-20 15:44:16', 1),
 (4237597, '2023-04-16 02:00:12', 1);
 
 -- --------------------------------------------------------
@@ -326,15 +355,11 @@ INSERT INTO `seen_movies` (`user_id`, `movie_id`, `timestamp`) VALUES
 (1, 36993, '2023-04-18 01:14:19'),
 (1, 36994, '2023-04-18 01:14:45'),
 (1, 75023, '2023-04-11 02:30:02'),
-(1, 76600, '2023-04-18 23:49:59'),
 (1, 181808, '2023-04-11 02:28:03'),
 (1, 300619, '2023-04-16 03:58:14'),
-(1, 502356, '2023-04-18 00:53:16'),
 (1, 593643, '2023-04-10 17:42:48'),
-(1, 594767, '2023-04-13 01:15:20'),
-(1, 603692, '2023-04-19 15:35:33'),
+(1, 594767, '2023-04-20 01:31:34'),
 (1, 640146, '2023-04-10 18:02:09'),
-(1, 700391, '2023-04-19 19:31:18'),
 (1, 980078, '2023-04-10 18:02:13'),
 (3, 496, '2023-04-13 23:40:29'),
 (3, 76600, '2023-04-13 23:38:39'),
@@ -364,6 +389,8 @@ CREATE TABLE `show_ratings` (
 INSERT INTO `show_ratings` (`user_id`, `show_id`, `rating`, `timestamp`) VALUES
 (1, 82856, 20, '2023-04-19 20:04:34'),
 (1, 196080, 92, '2023-04-19 22:08:44'),
+(1, 215803, 50, '2023-04-20 15:44:13'),
+(2, 196080, 60, '2023-04-20 13:20:23'),
 (3, 196080, 13, '2023-04-19 22:06:00');
 
 -- --------------------------------------------------------
@@ -397,13 +424,15 @@ INSERT INTO `tv_shows` (`id`, `name`, `original_name`, `poster_path`) VALUES
 (88329, 'Hawkeye', 'Hawkeye', '/uQdAET8dl403BIVktl5gjtzXRDT.jpg'),
 (94605, 'Arcane', 'Arcane', '/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg'),
 (100088, 'The Last of Us', 'The Last of Us', '/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg'),
+(101463, 'Al rojo vivo', 'Al rojo vivo', '/ag6PmoBxkF2s1uY3An618NCEt3g.jpg'),
 (101604, 'قلبي اطمأن', 'قلبي اطمأن', '/3iNT3rKs8q7qDr1fWxfznimZ7JV.jpg'),
 (101978, 'Disney Galerie - Star Wars: Mandalorian', 'Disney Gallery / Star Wars: The Mandalorian', '/6Hc2eHp59iTyMqkhcumNovq2l6y.jpg'),
 (114461, 'Ahsoka', 'Ahsoka', '/kw0oydRUsqDohUKiF4LKkG8tDIm.jpg'),
 (196080, 'منهو ولدنا؟', 'منهو ولدنا؟', '/nEtzUtqVri3v5vyOYdajc4nA9m6.jpg'),
 (203057, 'Melur Untuk Firdaus', 'Melur Untuk Firdaus', '/rVxQxsY3bQWTabHUi2Qr3aoOafk.jpg'),
 (209085, 'Amor Perfeito', 'Amor Perfeito', '/aOPhyvHDauWFuc3rthpHArCNyrm.jpg'),
-(213713, 'Faltu', 'Faltu', '/lgyFuoXs7GvKJN0mNm7z7OMOFuZ.jpg');
+(213713, 'Faltu', 'Faltu', '/lgyFuoXs7GvKJN0mNm7z7OMOFuZ.jpg'),
+(215803, 'Batang Quiapo', 'Batang Quiapo', '/9McqS8mgMf5NJCAKZIY6J1oOl8y.jpg');
 
 -- --------------------------------------------------------
 
@@ -464,6 +493,7 @@ INSERT INTO `tv_show_episodes` (`id`, `show_id`, `season_number`, `episode_numbe
 (1987337, 82856, 1, 7, '2019-12-18', 42, 'Kapitola 7: Zúčtování'),
 (2023593, 82856, 1, 8, '2019-12-27', 50, 'Kapitola 8: Vykoupení'),
 (2181581, 100088, 1, 1, '2023-01-15', 81, 'Když se ztratíš v temnotě'),
+(2211892, 101463, 1, 1, '2011-01-10', 200, '1. epizoda'),
 (2215166, 101604, 1, 1, '2018-05-17', 30, '1. epizoda'),
 (2223971, 101604, 1, 2, '2018-05-19', 30, '2. epizoda'),
 (2228037, 101978, 1, 1, '2020-05-04', 32, 'Režie'),
@@ -512,6 +542,7 @@ INSERT INTO `tv_show_episodes` (`id`, `show_id`, `season_number`, `episode_numbe
 (4071046, 100088, 1, 8, '2023-03-05', 52, 'V časech nouze'),
 (4071047, 100088, 1, 9, '2023-03-12', 46, 'Hledej světlo'),
 (4082902, 82856, 3, 1, '2023-03-01', 37, 'Kapitola 17: Odpadlík'),
+(4089876, 215803, 1, 1, '2023-02-13', 50, '1. epizoda'),
 (4237589, 82856, 3, 2, '2023-03-08', 45, 'Kapitola 18: Doly na Mandaloru'),
 (4237591, 82856, 3, 3, '2023-03-15', 58, 'Kapitola 19: Obrácení'),
 (4237593, 82856, 3, 4, '2023-03-22', 33, 'Kapitola 20: Nalezenec'),
@@ -593,6 +624,12 @@ ALTER TABLE `movies`
 --
 ALTER TABLE `movie_ratings`
   ADD PRIMARY KEY (`user_id`,`movie_id`);
+
+--
+-- Indexes for table `movie_recommendations`
+--
+ALTER TABLE `movie_recommendations`
+  ADD PRIMARY KEY (`source_user_id`,`target_user_id`,`movie_id`);
 
 --
 -- Indexes for table `seen_episodes`

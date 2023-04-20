@@ -29,6 +29,4 @@ if (!empty($_POST)) {
 
     header('Location: ../signin.php');
     exit();
-
-    var_dump($emailQuery);
 }

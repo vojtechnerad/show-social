@@ -58,6 +58,10 @@ if (isset($_GET['id'])) {
                 } else {
                     echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteMovie(' . $movieDetails->id . ')"><i class="bi bi-heart"></i> Oblíbit</button>';
                 }
+
+                // Doporučit film tlačítko
+                echo '<a href="movierecommendation.php?movieId=' . $movieId . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Doporučit kamarádovi</a>';
+
                 echo '</div>';
 
                 // Hodnocení
