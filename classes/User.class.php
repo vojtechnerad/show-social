@@ -155,6 +155,69 @@ class User extends Dbh {
         return $statement->fetchAll();
     }
 
+    function getFriendslist() {
+        $friendslistStatement = $this->connect()->prepare('
+            SELECT
+                friend_id,
+                CONCAT(users.first_name, " " , users.last_name) as full_name,
+                users.user_name as user_name
+            FROM (
+                SELECT adresseeId as friend_id
+                FROM friendslist
+                WHERE isConfirmed = 1 AND requesterId = (:user_id)
+                UNION
+                SELECT requesterId as friend_id
+                FROM friendslist
+                WHERE isConfirmed = 1 AND adresseeId = (:user_id)
+            ) friends
+            LEFT JOIN users
+            ON friends.friend_id = users.id;
+        ');
+
+        $friendslistStatement->execute([
+            '(:user_id)' => $_SESSION['user_id']
+        ]);
+
+        $friendslist = $friendslistStatement->fetchAll();
+
+        return $friendslist;
+    }
+
+    function getMovieRatingsOfFriends($movieId) {
+        $ratingsStatement = $this->connect()->prepare('
+            SELECT
+                friend_id,
+                CONCAT(users.first_name, " " , users.last_name) as full_name,
+                users.user_name as user_name,
+                movie_ratings.rating as rating,
+                movie_ratings.timestamp as timestamp
+            FROM (
+                SELECT adresseeId as friend_id
+                FROM friendslist
+                WHERE isConfirmed = 1 AND requesterId = (:user_id)
+                UNION
+                SELECT requesterId as friend_id
+                FROM friendslist
+                WHERE isConfirmed = 1 AND adresseeId = (:user_id)
+            ) friends
+            LEFT JOIN users
+            ON friends.friend_id = users.id
+            INNER JOIN movie_ratings
+            ON friends.friend_id = movie_ratings.user_id
+            WHERE movie_ratings.movie_id = (:movie_id)
+            ORDER BY movie_ratings.timestamp DESC;
+        ');
+
+        $ratingsStatement->execute([
+            ':user_id' => $_SESSION['user_id'],
+            ':movie_id' => $movieId
+        ]);
+
+        $ratings = $ratingsStatement->fetchAll();
+
+        return $ratings;
+    }
+
     function getIncomingFriendRequests() {
         $sql = '
             SELECT
@@ -508,4 +571,6 @@ class User extends Dbh {
         $episodeList = $episodeListStatement->fetchAll();
         return $episodeList;
     }
+
+
 }

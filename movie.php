@@ -16,7 +16,7 @@ if (isset($_GET['id'])) {
             $movieDetails = $movie->getDataFromTmdb();
 
             echo '<div class="container-sm">';
-            echo '<div class="row ">';
+            echo '<div class="row">';
             echo '<div class="col-8">';
             echo '<h1>' . $movieDetails->title . '</h1>';
             echo '<h2>' . $movieDetails->original_title . '</h2>';
@@ -77,6 +77,33 @@ if (isset($_GET['id'])) {
             echo '</div>';
 
             echo '</div>';
+            // Hodnocení přátel
+            if (isset($user)) {
+                $friendsRating = $user->getMovieRatingsOfFriends($movieDetails->id);
+                echo '<h5>Hodnocení přátel</h5>';
+                echo '<div class="row row-cols-2 justify-content-center">';
+                echo '<div class="col">';
+                echo '<div class="list-group">';
+                if ($friendsRating) {
+                    foreach ($friendsRating as $rating) {
+                        echo '<a href="./user.php?id=' . $rating['friend_id'] . '" class="list-group-item list-group-item-action">';
+                        echo '<div class="d-flex w-100 justify-content-between">';
+                        echo '<p class="mb-1 fw-bold">' . $rating['full_name'] . ' (@' . $rating['user_name']  . ')</p>';
+                        $bookmarkedTime = date_create($rating['timestamp']);
+                        echo '<small class="text-secondary">' . date_format($bookmarkedTime, 'd.m.Y H:i') . '</small>';
+                        echo '<small class="fw-bold">' . $rating['rating'] . ' %</small>';
+                        echo '</div>';
+                        echo '</a>';
+                    }
+                } else {
+                    echo '<div class="list-group-item">Žádný z vašich přátel zatím film neohodnotil.</div>';
+                }
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+            }
+
+
             echo '</div>';
             echo '</div>';
         } else {
