@@ -98,7 +98,8 @@ $isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
 if (!$selectedUserData['public_profile'] AND !$isBefriended) {
     echo '<h3>Uživatel má soukromý profil.</h3>';
 } else {
-    echo '<h3>Lze vidět.</h3>';
+    // Odkaz na výpis filmů a seriálů zhlédnuté přihlášeným uživatelem i zobrazovaným uživatelem
+    echo '<a href="common.php?targetUser=' . $userId . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Zobrazit společné zhlédnuté</a>';
 
     // Výpis filmů
     echo '<h3>Poslední zlhédnuté filmy</h3>';

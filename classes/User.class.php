@@ -445,4 +445,67 @@ class User extends Dbh {
         $showRating = $showRatingStatement->fetch();
         return $showRating;
     }
+
+    function listSeenMoviesInCommon($targetUserId) {
+        $movieListStatement = $this->connect()->prepare('
+            SELECT currentUser.movie_id, movies.title, movies.original_title, movies.poster_path
+            FROM (
+                SELECT movie_id
+                FROM seen_movies
+                WHERE user_id = (:current_user_id)
+            ) currentUser
+            JOIN (
+                SELECT movie_id
+                FROM seen_movies
+                WHERE user_id = (:target_user_id)
+            ) targetUser
+            ON currentUser.movie_id = targetUser.movie_id
+            LEFT JOIN movies
+            ON currentUser.movie_id = movies.movie_id;
+        ');
+
+        $movieListStatement->execute([
+            ':current_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId
+        ]);
+
+        $movieList = $movieListStatement->fetchAll();
+        return $movieList;
+    }
+
+    function listSeenEpisodesInCommon($targetUserId) {
+        $episodeListStatement = $this->connect()->prepare('
+            SELECT
+                tv_show_episodes.name as episode_name,
+                CONCAT("S", tv_show_episodes.season_number , "E", tv_show_episodes.episode_number) as episode_code,
+                tv_shows.id as show_id,
+                tv_shows.name as show_name,
+                tv_shows.original_name as show_original_name,
+                tv_shows.poster_path as poster_path
+            FROM (
+                SELECT id
+                FROM seen_episodes
+                WHERE user_id = (:current_user_id)
+            ) currentUser
+            JOIN (
+                SELECT id, timestamp
+                FROM seen_episodes
+                WHERE user_id = (:target_user_id)
+            ) targetUser
+            ON currentUser.id = targetUser.id
+            LEFT JOIN tv_show_episodes
+            ON currentUser.id = tv_show_episodes.id
+            LEFT JOIN tv_shows
+            ON tv_show_episodes.show_id = tv_shows.id
+            ORDER BY targetUser.timestamp DESC;
+        ');
+
+        $episodeListStatement->execute([
+            ':current_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId
+        ]);
+
+        $episodeList = $episodeListStatement->fetchAll();
+        return $episodeList;
+    }
 }
