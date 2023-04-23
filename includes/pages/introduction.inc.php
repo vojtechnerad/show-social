@@ -5,5 +5,9 @@
 
 <h2>Používat síť</h2>
 <p>Chcete se zaregistrovat?</p>
+<a href="../../signup.php">Zaregistrovat se</a>
+<br/>
+<br/>
+
 <p>Máte již účet?</p>
 <a href="../../signin.php">Přihlásit se</a>

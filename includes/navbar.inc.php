@@ -33,10 +33,8 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <?php
-                    if (isset($_SESSION['user_id'])) {
-                        echo '<a ' . (($active_page == 'dashboard') ? $active_link_classes : $nonactive_link_classes) . ' href="../index.php"><i class="bi bi-easel-fill"></i> Dashboard</a>';
-                    } else {
-                        echo '<a ' . (($active_page == 'introduction') ? $active_link_classes : $nonactive_link_classes) . ' href="../index.php">Úvod</a>';
+                    if (!isset($_SESSION['user_id'])) {
+                        echo '<a ' . (($active_page == 'introduction') ? $active_link_classes : $nonactive_link_classes) . ' href="../index.php"><i class="bi bi-house-fill"></i> Úvod</a>';
                     }
                     ?>
                 </li>

@@ -12,7 +12,8 @@ if (@$_SESSION['user_id']) {
 // Generování obsahu stránky
 include 'includes/header.inc.php';
 if (@$_SESSION['user_id']) {
-    require_once 'includes/pages/dashboard.inc.php';
+    header('Location: profile.php');
+    exit();
 } else {
     require_once 'includes/pages/introduction.inc.php';
 }

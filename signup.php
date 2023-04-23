@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 <h1>Registrace</h1>
 <div class="align-self-center">
     <div class="row justify-content-center align-self-center">
-        <div class="col-3 align-self-center">
+        <div class="col col-md-5 align-self-center">
             <form method="post" action="signup.php">
                 <?php
                     if (isset($errors['notAllRequiredFieldsFilled']) AND $errors['notAllRequiredFieldsFilled']) {
@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 ?>
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
-                    <input type="text" class="form-control <?php echo $emailValidation ?>" id="email" name="email" <?php echo $emailPost ?> required>
+                    <input type="email" class="form-control <?php echo $emailValidation ?>" id="email" name="email" <?php echo $emailPost ?> required>
                     <?php
                         if (isset($errors['emailTaken']) AND $errors['emailTaken']) {
                             echo '<div class="invalid-feedback" id="usernameTaken">Email je již zabraný.</div>';
@@ -203,6 +203,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
                 <button type="submit" class="btn btn-primary">Zaregistrovat se</button>
             </form>
+
+            <div class="row mt-5">
+                <div>
+                    Máte již účet?
+                    <a href="signin.php" class="btn btn-secondary">Přihlásit se</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

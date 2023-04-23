@@ -18,6 +18,13 @@ include 'includes/header.inc.php';
                 </div>
                 <button type="submit" class="btn btn-primary">Přihlásit</button>
             </form>
+
+            <div class="row mt-5">
+                <div>
+                    Ještě nejste uživatel?
+                    <a href="signup.php" class="btn btn-secondary">Zaregistrovat se</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
