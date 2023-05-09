@@ -1,4 +1,8 @@
 <?php
+/**
+ * Skript signin.php obsahuje formulář pro přihlášení uživalete do aplikace.
+ */
+
 $title = 'Přihlášení';
 $active_page = 'login';
 include 'includes/header.inc.php';

@@ -1,6 +1,6 @@
 <?php
 /**
- * Stránka User
+ * Script user.php pro tvorbu uživatelského profilu.
  *
  * Výpis profilu zvoleného uživatele skrze GETový parametr.
  * Zvolený parametr bude zkontrolován že je ve správném formátu (numerický a celočíselný)

@@ -1,8 +1,7 @@
 <?php
 /**
- * Page for searching TV shows.
- * Shows page contains search bar.
- * xd
+ * Skript shows.php slouží pro generování stránky pro vyhledávání seriálů
+ * s výpisem trendujících seriálů.
  */
 
 require_once 'classes/TmdbSearch.class.php';
@@ -37,6 +36,5 @@ if ($popularTvShows) {
     }
     echo '</div>';
 }
-
 include 'includes/footer.inc.php';
 ?>

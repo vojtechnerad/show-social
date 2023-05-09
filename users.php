@@ -1,4 +1,11 @@
 <?php
+/**
+ * Skript users.php slouží k vytvoření stránky určené pro výpis uživatelů sociální sítě.
+ * Stránka obsahuje výpis polsedních zaregistrovaných uživatelů.
+ * Pokud je uživatel přihlášen, na stránce se výpis rozšíří o výpis příchozích žádostí o přátelství,
+ * a o seznam přátel přihlášeného uživatele.
+ */
+
 @session_start();
 require_once 'classes/dbh.class.php';
 require 'classes/Users.class.php';
@@ -9,8 +16,6 @@ $title = 'Lidé';
 
 include 'includes/header.inc.php';
 require_once 'includes/searchbars/users-search.inc.php';
-
-
 
 $isUserLogged = isset($_SESSION['user_id']);
 

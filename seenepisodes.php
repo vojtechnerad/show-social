@@ -1,6 +1,6 @@
 <?php
 /**
- * Stránka Seen Movies
+ * Skript seenepisodes.php slouží ke generování stránky s výpisem všech zhlédnutých epizod seriálů přihlášeného uživatele.
  *
  */
 @session_start();

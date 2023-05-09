@@ -1,6 +1,6 @@
 <?php
 /**
- * Stránka Seen Movies
+ * Skript seenmovies.php slouží ke generování stránky s výpisem všech zhlédnutých filmů přihlášeného uživatele.
  *
  */
 @session_start();

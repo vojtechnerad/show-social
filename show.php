@@ -1,6 +1,8 @@
 <?php
 /**
- * Page with details about selected show.
+ * Skript show.php vypisuje podrobná data zvoleného seriálu skrze GETtový parametr.
+ * ID seriálu je převzato ze služby TMDB.
+ * TODO check bez parametru/neexistuje
  */
 session_start();
 require_once 'classes/TvShow.class.php';
