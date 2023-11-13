@@ -49,7 +49,8 @@ foreach ($seenMovies as $seenMovie) {
     echo '<h6 class="card-subtitle mb-2 text-body-secondary">' . $seenMovie['original_title'] . '</h6>';
     //<i class="bi bi-clock-fill"></i>
     echo '<p class="card-text"><i class="bi bi-clock-fill"></i> ' . $seenMovie['runtime'] . ' minut</p>';
-    echo '<p class="card-text"><small class="text-body-secondary"><i class="bi bi-calendar-event-fill"></i> Zhlédnuto: ' . $seenMovie['seen_time'] . '</small></p>';
+    $seenTime = date_create($seenMovie['seen_time']);
+    echo '<p class="card-text"><small class="text-body-secondary"><i class="bi bi-calendar-event-fill"></i> Zhlédnuto: ' . date_format($seenTime, 'd.m.Y H:i') . '</small></p>';
     echo '</div>';
     echo '</div>';
 

@@ -31,8 +31,8 @@ $lastSeenMoviesStatement->execute([
    ':user_id' => $_SESSION['user_id']
 ]);
 $lastSeenMoviesData = $lastSeenMoviesStatement->fetchAll();
+echo '<h2>Poslední zhlédnuté filmy</h2>';
 if ($lastSeenMoviesData) {
-    echo '<h2>Poslední zhlédnuté filmy</h2>';
     echo '<div class="row">';
     foreach ($lastSeenMoviesData as $seenMovie) {
         echo '<div class="card p-0 ms-2 mb-2" style="width: 10rem;">';
@@ -49,6 +49,10 @@ if ($lastSeenMoviesData) {
         echo '</div>';
     }
     echo '<a href="seenmovies.php?user_id=' . $_SESSION['user_id'] .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých filmů <i class="bi bi-arrow-right"></i></a>';
+    echo '</div>';
+} else {
+    echo '<div class="list-group">';
+    echo '<div class="list-group-item">Nemáte zatím žádné zhlédnuté filmy.</div>';
     echo '</div>';
 }
 
@@ -74,26 +78,34 @@ $lastSeenEpisodesStatement = $db->prepare('
 $lastSeenEpisodesStatement->bindParam(':user_id', $_SESSION['user_id']);
 $lastSeenEpisodesStatement->execute();
 $lastSeenEpisodesData = $lastSeenEpisodesStatement->fetchAll();
-echo '<div class="row">';
-foreach ($lastSeenEpisodesData as $seenEpisode) {
-    //var_dump($seenEpisode);
-    // Tvorba karty epizody
-    echo '<div class="card p-0 ms-2 mb-2" style="width: 10rem;">';
-    echo '<img src="https://image.tmdb.org/t/p/w500' . $seenEpisode['poster_path'] . '" class="card-img-top" alt="...">'; // TODO alt text
-    echo '<div class="card-body">';
-    echo '<h5 class="card-title">' . $seenEpisode['show_name'] . '</h5>';
-    echo '<h6 class="card-title">' . $seenEpisode['episode_name'] . '</h6>';
-    $episodeCode = 'S' . $seenEpisode['season_number'] . 'E' . $seenEpisode['episode_number'];
-    echo '<p class="card-text">' . $episodeCode . '</p>';
-    echo '<a href="show.php?id=' . $seenEpisode['show_id'] . '" class="stretched-link""></a>';
-    $seenTime = date_create($seenEpisode['seen_time']);
+if ($lastSeenEpisodesData) {
+    echo '<div class="row">';
+    foreach ($lastSeenEpisodesData as $seenEpisode) {
+        //var_dump($seenEpisode);
+        // Tvorba karty epizody
+        echo '<div class="card p-0 ms-2 mb-2" style="width: 10rem;">';
+        echo '<img src="https://image.tmdb.org/t/p/w500' . $seenEpisode['poster_path'] . '" class="card-img-top" alt="...">'; // TODO alt text
+        echo '<div class="card-body">';
+        echo '<h5 class="card-title">' . $seenEpisode['show_name'] . '</h5>';
+        echo '<h6 class="card-title">' . $seenEpisode['episode_name'] . '</h6>';
+        $episodeCode = 'S' . $seenEpisode['season_number'] . 'E' . $seenEpisode['episode_number'];
+        echo '<p class="card-text">' . $episodeCode . '</p>';
+        echo '<a href="show.php?id=' . $seenEpisode['show_id'] . '" class="stretched-link""></a>';
+        $seenTime = date_create($seenEpisode['seen_time']);
+        echo '</div>';
+        echo '<div class="card-footer text-body-secon dary">';
+        echo date_format($seenTime, 'd.m.Y H:i');
+        echo '</div>';
+        echo '</div>';
+    }
+    echo '<a href="seenepisodes.php?user_id=' . $_SESSION['user_id'] .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých epizod <i class="bi bi-arrow-right"></i></a>';
     echo '</div>';
-    echo '<div class="card-footer text-body-secon dary">';
-    echo date_format($seenTime, 'd.m.Y H:i');
-    echo '</div>';
+} else {
+    echo '<div class="list-group">';
+    echo '<div class="list-group-item">Nemáte zatím žádné zhlédnuté epizody.</div>';
     echo '</div>';
 }
-echo '<a href="seenepisodes.php?user_id=' . $_SESSION['user_id'] .'" class="btn btn-light btn-lg my-3">Výpis všech zhlédnutých epizod <i class="bi bi-arrow-right"></i></a>';
+
 echo '</div>';
 include 'includes/footer.inc.php';
 ?>

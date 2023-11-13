@@ -20,7 +20,9 @@ $watchtimeObject = $user->getWatchtimePerLastDay();
 $seenMinutesInTotal = $watchtimeObject->watchtime;
 $seenPercentage = $watchtimeObject->watchtimePercentage;
 $limit = $watchtimeObject->watchtimeLimit;
-var_dump($watchtimeObject);
+echo '<div class="container-sm">';
+echo '<h1>Binge Meter</h1>';
+echo '<h2>Současný stav</h2>';
 $bingeMeterContent = 'Za dnešek jste zhlédli ' . $seenMinutesInTotal . ' minut obsahu (' . $seenPercentage . ' %) z vašeho limitu ' . $limit . ' minut.';
 echo '<p>' . $bingeMeterContent . '</p>';
 echo '<p>';
@@ -34,7 +36,7 @@ echo '<p>';
     echo '</p>';
 
 ?>
-<h1>Binge Meter</h1>
+<h2>Popis funkce</h2>
 <h3>Co to je</h3>
 <p>Binge Meter je speciální ukazatel, zobrazující kolik času uživatel strávil sledováním filmů a seriálů.</p>
 
@@ -57,5 +59,6 @@ echo '<p>';
 <p>Podle odborníků se s binge watchingem pojí řada potenciálních zdravotních rizik. Přece jenom člověk při sledování seriálů či filmů sedí klidně i po několik hodin.</p>
 <p>Pomocí Binge Metru tato stránka chce upozornit uživatele o jejich stavu zhlédnutých filmů či seriálů za daný den. A odratit je tak od dalšího nekončícího sledování 'dalšího jednoho dílu'.</p>
 <?php
+echo '</div>';
 include 'includes/footer.inc.php';
 ?>

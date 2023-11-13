@@ -117,7 +117,7 @@
                     echo '<li><a class="dropdown-item" href="../bookmarks.php"><i class="bi bi-bookmarks-fill"></i> Založené</a></li>';
                     echo '<li><a class="dropdown-item" href="../favorites.php"><i class="bi bi-heart-fill"></i> Oblíbené</a></li>';
                     echo '<li><hr class="dropdown-divider"></li>';
-                    echo '<li><a class="dropdown-item" href="#"><i class="bi bi-gear-fill"></i> Nastavení profilu</a></li>';
+                    echo '<li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear-fill"></i> Nastavení profilu</a></li>';
                     echo '<li><hr class="dropdown-divider"></li>';
                     echo '<li><a class="dropdown-item" href="../includes/signout.inc.php"><p class="text-danger mb-0"><i class="bi bi-box-arrow-right"></i> Odhlášení</p></a></li>';
                     echo '</ul>';

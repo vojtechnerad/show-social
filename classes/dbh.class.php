@@ -1,16 +1,19 @@
 <?php
 
 class Dbh {
-    /* endora
-    private $host = "sqlb1.endora.cz";
-    private $username = "vojtechnerad";
+    // Údaje pro webglobe hosting
+    private $host = "db.dw175.webglobe.com";
+    private $username = "showsocialuser";
     private $password = "Ayylmao1337";
-    private $dbname = "showsocial";
-    */
+    private $dbname = "show_social";
+
+    // Údaje pro lokální vývojové prostředí
+    /*
     private $host = "localhost";
     private $username = "root";
     private $password = "ayylmao1337";
     private $dbname = "show_social";
+    */
 
     public function connect() {
         $dsn = 'mysql:host=' .  $this->host .';dbname=' . $this->dbname;

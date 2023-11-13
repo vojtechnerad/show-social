@@ -93,13 +93,20 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
 }
 
 // Kontrola soukromého profilu a spřetelených účtů
-$isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
+if (isset($_SESSION['user_id'])) {
+    $isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
+} else {
+    $isBefriended = false;
+}
+
 
 if (!$selectedUserData['public_profile'] AND !$isBefriended) {
     echo '<h3>Uživatel má soukromý profil.</h3>';
 } else {
     // Odkaz na výpis filmů a seriálů zhlédnuté přihlášeným uživatelem i zobrazovaným uživatelem
-    echo '<a href="common.php?targetUser=' . $userId . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Zobrazit společné zhlédnuté</a>';
+    if (isset($_SESSION['user_id'])) {
+        echo '<a href="common.php?targetUser=' . $userId . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Zobrazit společné zhlédnuté</a>';
+    }
 
     // Výpis filmů
     echo '<h3>Poslední zlhédnuté filmy</h3>';

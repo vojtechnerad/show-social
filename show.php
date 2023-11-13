@@ -87,6 +87,8 @@ if (isset($_SESSION['user_id'])) {
     } else {
         echo '<button id="changeFavoriteStatusBtn" class="btn btn-secondary" onclick="favoriteTvShow(' . $tvShowData['id'] . ')"><i class="bi bi-star"></i> Oblíbit</button>';
     }
+    // Doporučit film tlačítko
+    echo '<a href="showrecommendation.php?showId=' . $tvShowData['id'] . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Doporučit kamarádovi</a>';
     echo '</div>';
 
     // Hodnocení

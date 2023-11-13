@@ -25,6 +25,20 @@ class User extends Dbh {
         return $statement->fetch();
     }
 
+    function getFullUserData() {
+        $sql = '
+            SELECT *
+            FROM users
+            WHERE id = (:user_id)
+            LIMIT 1;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetch();
+    }
+
     function isUserBefriendedWith($askingUser) {
         $sql = '
             SELECT requesterId, adresseeId, isConfirmed, timestamp
@@ -620,6 +634,19 @@ class User extends Dbh {
         ]);
     }
 
+    function recommendShow($targetUserId, $showId, $description) {
+        $showRecommendationStatement = $this->connect()->prepare('
+            REPLACE INTO show_recommendations (source_user_id, target_user_id, show_id, description)
+            VALUES (:source_user_id, :target_user_id, :show_id, :description);
+        ');
+        $showRecommendationStatement->execute([
+            ':source_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId,
+            ':show_id' => $showId,
+            ':description' => $description,
+        ]);
+    }
+
     function isMovieRecommendedToUser($targetUserId, $movieId) {
         $movieRecommendationStatement = $this->connect()->prepare('
             SELECT timestamp, description
@@ -640,6 +667,24 @@ class User extends Dbh {
         return $movieRecommendation;
     }
 
+    function isShowRecommendedToUser($targetUserId, $showId) {
+        $showRecommendationStatement = $this->connect()->prepare('
+            SELECT timestamp, description
+            FROM show_recommendations
+            WHERE source_user_id = (:source_user_id)
+            AND target_user_id = (:target_user_id)
+            AND show_id = (:show_id)
+            LIMIT 1;
+        ');
+        $showRecommendationStatement->execute([
+            ':source_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId,
+            ':show_id' => $showId,
+        ]);
+        $showRecommendation = $showRecommendationStatement->fetch();
+        return $showRecommendation;
+    }
+
     function deleteMovieRecommendation($targetUserId, $movieId) {
         $movieRecommendationStatement = $this->connect()->prepare('
             DELETE FROM movie_recommendations
@@ -651,6 +696,20 @@ class User extends Dbh {
             ':source_user_id' => $_SESSION['user_id'],
             ':target_user_id' => $targetUserId,
             ':movie_id' => $movieId,
+        ]);
+    }
+
+    function deleteShowRecommendation($targetUserId, $showId) {
+        $showRecommendationStatement = $this->connect()->prepare('
+            DELETE FROM show_recommendations
+            WHERE source_user_id = (:source_user_id)
+            AND target_user_id = (:target_user_id)
+            AND show_id = (:show_id);
+        ');
+        $showRecommendationStatement->execute([
+            ':source_user_id' => $_SESSION['user_id'],
+            ':target_user_id' => $targetUserId,
+            ':show_id' => $showId,
         ]);
     }
 
@@ -682,5 +741,42 @@ class User extends Dbh {
         return $movieRecommendations;
     }
 
+    function getUsersShowRecommendations() {
+        $showRecommendationsStatement = $this->connect()->prepare('
+            SELECT
+                show_recommendations.timestamp as timestamp,
+                show_recommendations.description as description,
+                tv_shows.id as show_id,
+                tv_shows.name as name,
+                tv_shows.original_name as original_name,
+                users.id as source_user_id,
+                CONCAT (users.first_name, " ", users.last_name) as full_name,
+                users.user_name as user_name
+            FROM show_recommendations
+            LEFT JOIN tv_shows
+            ON show_recommendations.show_id = tv_shows.id
+            LEFT JOIN users
+            ON show_recommendations.source_user_id = users.id
+            WHERE show_recommendations.target_user_id = (:user_id)
+            ORDER BY show_recommendations.timestamp DESC;
+        ');
+        $showRecommendationsStatement->execute([
+            ':user_id' => $_SESSION['user_id'],
+        ]);
+        $showRecommendations = $showRecommendationsStatement->fetchAll();
+        return $showRecommendations;
+    }
 
+    function updateUsersSettings($publicProfile, $watchLimit) {
+        $insertChangesStatement = $this->connect()->prepare('
+            UPDATE users
+            SET watch_limit = (:watch_limit), public_profile = (:public_profile), created_at = created_at
+            WHERE id = (:user_id)
+        ');
+        $insertChangesStatement->execute([
+            ':watch_limit' => $watchLimit,
+            ':public_profile' => $publicProfile,
+            ':user_id' => $_SESSION['user_id']
+        ]);
+    }
 }
