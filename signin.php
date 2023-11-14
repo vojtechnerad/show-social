@@ -10,7 +10,7 @@ include 'includes/header.inc.php';
 <h1>Přihlášení</h1>
 <div class="align-self-center">
     <div class="row justify-content-center align-self-center">
-        <div class="col-3 align-self-center">
+        <div class="col col-md-5 align-self-center">
             <form method="post" action="includes/signin.inc.php">
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
