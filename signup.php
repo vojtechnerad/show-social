@@ -51,6 +51,20 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $errors['passwordsDoNotMatch'] = true;
         }
 
+        // Kontrola složitosti hesla
+        /*
+            Regulární výraz kontrolující heslo, aby obsahovalo
+            - alespoň 1 velké a 1 malé písmeno
+            - alespoň 1 číslice
+            - alespoň 1 speciální znak
+            - alespoň 10 znaků celkově
+        */
+        $passwordPattern = '(^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-_]).{10,}$)';
+        $isPasswordComplexEnough = preg_match($passwordPattern, $_POST['password']) == 1 ? true : false;
+        if (!isset($errors['passwordsDoNotMatch']) && !$isPasswordComplexEnough) { // Kontrola se spouší pouze v moment kdy se hesla shodují
+            $errors['passwordNotComplex'] = true;
+        }
+
         // Pokud nejsou žádné nedostatky, zaregistrovat uživatele a rovnou ho přihlásit
         if (!$errors) {
             $isPublicProfile = (!isset($_POST['private-profile']));
@@ -155,9 +169,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                     ?>
                 </div>
 
-                <div class="row mb-2">
+                <div class="row mb-0">
                     <?php
-                        $passwordValidation = ((isset($errors['passwordsDoNotMatch'])) AND $errors['passwordsDoNotMatch']) ? 'is-invalid' : '';
+                        $passwordValidation = (
+                                (isset($errors['passwordsDoNotMatch'])) AND $errors['passwordsDoNotMatch'] OR
+                                (isset($errors['passwordNotComplex'])) AND $errors['passwordNotComplex']
+                            ) ? 'is-invalid' : '';
                     ?>
                     <div class="col">
                         <label for="password" class="form-label">Heslo</label>
@@ -166,6 +183,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                             if (isset($errors['passwordsDoNotMatch']) AND $errors['passwordsDoNotMatch']) {
                                 echo '<div class="invalid-feedback" id="passwordsDoNotMatch">Hesla se neshodují.</div>';
                             }
+                            if ((isset($errors['passwordNotComplex'])) AND $errors['passwordNotComplex']) {
+                                echo '<div class="invalid-feedback" id="passwordsDoNotMatch">Heslo není dostatečně složité.</div>';
+                            }
                         ?>
                     </div>
 
@@ -173,6 +193,20 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                         <div class="mb-3">
                             <label for="password-repeat" class="form-label">Heslo znovu</label>
                             <input type="password" class="form-control <?php echo $passwordValidation ?>" id="password-repeat" name="password-repeat" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <div id="emailHelp" class="form-text">
+                            Heslo musí obsahovat alespoň
+                            <ul>
+                                <li>10 a více znaků</li>
+                                <li>1 velké písmeno</li>
+                                <li>1 malé písmeno</li>
+                                <li>1 číslici</li>
+                                <li>1 speciální znak (. , # ? ! @ $ % ^ & * - _)</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
