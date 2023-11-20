@@ -779,4 +779,38 @@ class User extends Dbh {
             ':user_id' => $_SESSION['user_id']
         ]);
     }
+
+    function getSeenEpisodesRuntimeSum() {
+        $watchStatisticsStatement = $this->connect()->prepare('
+            SELECT SUM(runtime) as seenEpisodesRuntimeSum
+            FROM seen_episodes
+            LEFT JOIN tv_show_episodes USING (id)
+            WHERE user_id = (:user_id);
+        ');
+
+        $watchStatisticsStatement->execute([
+            'user_id' => $this->id
+        ]);
+
+        $watchStatistics = $watchStatisticsStatement->fetch();
+
+        return ($watchStatistics['seenEpisodesRuntimeSum']) ? $watchStatistics['seenEpisodesRuntimeSum'] : 0 ;
+    }
+
+    function getSeenMoviesRuntimeSum() {
+        $watchStatisticsStatement = $this->connect()->prepare('
+            SELECT SUM(runtime) as seenMoviesRuntimeSum
+            FROM seen_movies
+            LEFT JOIN movies USING (movie_id)
+            WHERE user_id = (:user_id);
+        ');
+
+        $watchStatisticsStatement->execute([
+            'user_id' => $this->id
+        ]);
+
+        $watchStatistics = $watchStatisticsStatement->fetch();
+
+        return ($watchStatistics['seenMoviesRuntimeSum']) ? $watchStatistics['seenMoviesRuntimeSum'] : 0 ;
+    }
 }

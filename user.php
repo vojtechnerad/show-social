@@ -66,20 +66,33 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
     );
     $friendlistData = $friendlistStatement->fetch();
 
+    // Kontrola soukromého profilu a spřátelených účtů
+    if (isset($_SESSION['user_id'])) {
+        $isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
+    } else {
+        $isBefriended = false;
+    }
+
+    // Odkaz na výpis filmů a seriálů zhlédnuté přihlášeným uživatelem i zobrazovaným uživatelem
+    $seenInCommonButton = (isset($_SESSION['user_id']) && $selectedUserData['public_profile']) ? '<a href="common.php?targetUser=' . $userId . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Zobrazit společné zhlédnuté</a>' : '';
+
     echo '<form action="./includes/change-friendship-status.php" method="POST">';
     echo '<input type="hidden" name="target-user" id="target-user" value="' . $userId . '">';
     if (!$friendlistData) {
         echo '<button type="submit" class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Přidat do přátel</button>';
+        echo $seenInCommonButton;
     }
 
     if (@$friendlistData['requesterId'] == $_SESSION['user_id'] and @$friendlistData['isConfirmed'] == false) {
         echo '<button type="submit" class="btn btn-danger"><i class="bi bi-x"></i> Stáhnout požadavek o přidání</button>';
+        echo $seenInCommonButton;
         $requestCreatedAt = date_create($friendlistData['timestamp']);
         echo '<p class="fw-light">Požadavek jste zaslali ' . date_format($requestCreatedAt, 'd.m.Y H:i') . '</p>';
     }
 
     if (@$friendlistData['adresseeId'] == $_SESSION['user_id'] and @$friendlistData['isConfirmed'] == false) {
         echo '<button type="submit" class="btn btn-success"><i class="bi bi-check"></i> Potvrdit přátelství</button>';
+        echo $seenInCommonButton;
         $requestCreatedAt = date_create($friendlistData['timestamp']);
         echo '<p class="fw-light">Požadavek byl vytvořen ' . date_format($requestCreatedAt, 'd.m.Y H:i') . '</p>';
     }
@@ -88,25 +101,19 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
         $friendsSince = date_create($friendlistData['timestamp']);
         echo '<p class="fw-light">Přátelé jste od ' . date_format($friendsSince, 'd.m.Y H:i') . '</p>';
         echo '<button type="submit" class="btn btn-danger"><i class="bi bi-person-dash-fill"></i> Odebrat z přátel</button>';
+        echo $seenInCommonButton;
     }
     echo '</form>';
 }
 
-// Kontrola soukromého profilu a spřetelených účtů
-if (isset($_SESSION['user_id'])) {
-    $isBefriended = $selectedUser->isUserBefriendedWith($_SESSION['user_id']);
-} else {
-    $isBefriended = false;
-}
+
 
 
 if (!$selectedUserData['public_profile'] AND !$isBefriended) {
     echo '<h3>Uživatel má soukromý profil.</h3>';
 } else {
-    // Odkaz na výpis filmů a seriálů zhlédnuté přihlášeným uživatelem i zobrazovaným uživatelem
-    if (isset($_SESSION['user_id'])) {
-        echo '<a href="common.php?targetUser=' . $userId . '" class="btn btn-primary"><i class="bi bi-people-fill"></i> Zobrazit společné zhlédnuté</a>';
-    }
+    // Import komponenty statistik uživatele
+    require 'includes/components/user-profile-info.inc.php';
 
     // Výpis filmů
     echo '<h3>Poslední zlhédnuté filmy</h3>';

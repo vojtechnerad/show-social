@@ -9,6 +9,7 @@ if (!$_SESSION['user_id']) {
 }
 
 $title = $_SESSION['first_name'] . ' ' . $_SESSION['last_name'];
+$user = new User($_SESSION['user_id']);
 $active_page = 'profile';
 include 'includes/header.inc.php';
 ?>
@@ -17,7 +18,9 @@ include 'includes/header.inc.php';
 </div>
 
 <?php
-$user = new User($_SESSION['user_id']);
+// Import komponenty statistik uživatele
+require 'includes/components/user-profile-info.inc.php';
+
 $lastSeenMoviesStatement = $db->prepare('
     SELECT seen_movies.user_id as user_id, seen_movies.movie_id as movie_id, seen_movies.timestamp as seen_time, movies.title as title, movies.poster_path as poster_path
     FROM seen_movies
