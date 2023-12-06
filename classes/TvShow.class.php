@@ -9,7 +9,7 @@ class TvShow extends TmdbApi {
     }
 
     /**
-     * Returns details about movie based on provided ID.
+     * Returns details about tv show based on provided ID.
      *
      * @return array TV show data from TMDB API.
      */
@@ -58,5 +58,65 @@ class TvShow extends TmdbApi {
         } else {
             return "Nehodnoceno";
         }
+    }
+
+    public function getTvShowComments() {
+        $statement = $this->connect()->prepare('
+            SELECT
+                tv_show_comments.comment_id,
+                tv_show_comments.comment,
+                tv_show_comments.timestamp,
+                users.id as user_id,
+                CONCAT(users.first_name, " " , users.last_name) as full_name,
+                users.user_name
+            FROM tv_show_comments
+            LEFT JOIN users
+            ON tv_show_comments.user_id = users.id
+            WHERE tv_show_id = (:tv_show_id);
+        ');
+
+        $statement->execute([
+            'tv_show_id' => $this->tvShowId
+        ]);
+
+        $result = $statement->fetchAll();
+        return $result;
+    }
+
+    public function deleteTvShowComment($commentId) {
+        $statement = $this->connect()->prepare('
+            DELETE FROM tv_show_comments
+            WHERE comment_id = (:comment_id);
+        ');
+        $statement->execute([
+            ':comment_id' => $commentId
+        ]);
+    }
+
+    public function getTvShowComment($commentId) {
+        $statement = $this->connect()->prepare('
+            SELECT *
+            FROM tv_show_comments
+            WHERE comment_id = (:comment_id);
+        ');
+
+        $statement->execute([
+            'comment_id' => $commentId
+        ]);
+
+        $result = $statement->fetch();
+        return $result;
+    }
+
+    public function insertNewComment($userId, $comment) {
+        $statement = $this->connect()->prepare('
+            INSERT INTO tv_show_comments (tv_show_id, user_id, comment)
+            VALUES (:tv_show_id, :user_id, :comment);
+        ');
+        $statement->execute([
+            ':tv_show_id' => $this->tvShowId,
+            ':user_id' => $userId,
+            ':comment' => $comment
+        ]);
     }
 }

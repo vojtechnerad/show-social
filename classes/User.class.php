@@ -13,7 +13,8 @@ class User extends Dbh {
                 id,
                 concat(first_name, " ", last_name) as full_name,
                 user_name,
-                public_profile
+                public_profile,
+                moderator
             FROM users
             WHERE id = (:user_id)
             LIMIT 1;

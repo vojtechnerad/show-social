@@ -39,4 +39,64 @@ class Movie extends TmdbApi {
             return "Nehodnoceno";
         }
     }
+
+    public function getMovieComments() {
+        $statement = $this->connect()->prepare('
+            SELECT
+                movie_comments.comment_id,
+                movie_comments.comment,
+                movie_comments.timestamp,
+                users.id as user_id,
+                CONCAT(users.first_name, " " , users.last_name) as full_name,
+                users.user_name
+            FROM movie_comments
+            LEFT JOIN users
+            ON movie_comments.user_id = users.id
+            WHERE movie_id = (:movie_id);
+        ');
+
+        $statement->execute([
+            'movie_id' => $this->movieId
+        ]);
+
+        $result = $statement->fetchAll();
+        return $result;
+    }
+
+    public function deleteMovieComment($commentId) {
+        $statement = $this->connect()->prepare('
+            DELETE FROM movie_comments
+            WHERE comment_id = (:comment_id);
+        ');
+        $statement->execute([
+            ':comment_id' => $commentId
+        ]);
+    }
+
+    public function getMovieComment($commentId) {
+        $statement = $this->connect()->prepare('
+            SELECT *
+            FROM movie_comments
+            WHERE comment_id = (:comment_id);
+        ');
+
+        $statement->execute([
+            'comment_id' => $commentId
+        ]);
+
+        $result = $statement->fetch();
+        return $result;
+    }
+
+    public function insertNewComment($userId, $comment) {
+        $statement = $this->connect()->prepare('
+            INSERT INTO movie_comments (movie_id, user_id, comment)
+            VALUES (:movie_id, :user_id, :comment);
+        ');
+        $statement->execute([
+            ':movie_id' => $this->movieId,
+            ':user_id' => $userId,
+            ':comment' => $comment
+        ]);
+    }
 }

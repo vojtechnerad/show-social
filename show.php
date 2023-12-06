@@ -182,9 +182,71 @@ if (isset($user)) {
     echo '</div>';
 
     echo '</div>';
+}
 
+// Komentáře
+if (isset($_SESSION['user_id'])) {
+    echo '<h5>Přidat nový komentář</h5>';
+    echo '<form class="mb-3" method="post" action="./includes/insert-comment.inc.php">';
+    echo '
+        <input type="hidden" id="type" name="type" value="tv_show" />
+        <input type="hidden" id="medium_id" name="medium_id" value="' . $tvShowData['id'] . '" />
+    ';
+    echo '
+        <div class="mb-3">
+            <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+            <div id="passwordHelpBlock" class="form-text">
+                Komentář může obsahovat maximálně 1000 znaků.
+            </div>
+        </div>
+    ';
+    echo '<button type="submit" class="btn btn-primary"><i class="bi bi-chat-left-text-fill"></i> Okomentovat</button>';
+
+    echo '</form>';
+}
+
+echo '<h5>Komentáře k filmu</h5>';
+$tvShowComments = $tvShow->getTvShowComments();
+if ($tvShowComments) {
+    if (isset($_SESSION['user_id'])) {
+        $userData = $user->getUserData();
+    }
+
+    echo '<div class="list-group mb-4">';
+    foreach ($tvShowComments as $comment) {
+        echo '<div class="list-group-item">';
+        echo '<div class="d-flex w-100 justify-content-between">';
+        echo '<a href="./user.php?id=' . $comment['user_id'] . '" class="d-flex">';
+        echo '<h5 class="mb-1">' . $comment['full_name'] . '</h5>';
+        echo '<h6 class="mb-1">@' . $comment['user_name'] . '</h6>';
+        echo '</a>';
+        if (isset($_SESSION['user_id'])) {
+            if ($userData['id'] === $comment['user_id'] || $userData['moderator']) {
+                echo '
+                    <form action="./includes/delete-comment.inc.php" method="post">
+                        <input type="hidden" id="type" name="type" value="tv_show" />
+                        <input type="hidden" id="medium_id" name="medium_id" value="' . $tvShowData['id'] . '" />
+                        <input type="hidden" id="comment_id" name="comment_id" value="' . $comment['comment_id'] . '" />
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Smazat</button>
+                    </form>
+                ';
+            }
+        }
+        echo '</div>';
+        echo '<p class="mb-1">' . htmlspecialchars($comment['comment']) . '</p>';
+        echo '<small>' . $comment['timestamp'] . '</small>';        
+        echo '</div>';
+    }
+    echo '</div>';
+} else {
+    echo '<div class="list-group mb-4">';
+    echo '<div class="list-group-item">';
+    echo 'Zatím film nikdo neokomentoval.';
+    echo '</div>';
     echo '</div>';
 }
+
+echo '</div>';
 ?>
 
 <script>
