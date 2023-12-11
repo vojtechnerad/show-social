@@ -1,4 +1,7 @@
 <?php
+/**
+ * Skript pro asynchronní změnu stavu zhlédnutí epizody.
+ */
 require_once '../includes/dbconn.inc.php';
 require_once '../classes/TvShow.class.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/classes/User.class.php';
@@ -88,7 +91,7 @@ if ($requestMethod === 'POST') {
             echo json_encode($response);
         }
     }
-    catch (PDOException $PDOException) {
+    catch (PDOException $PDOException) { // Pokud při zápisu do DB vyhodí chybu, vrátí chybu i do odpovědi
         $response = new stdClass();
         $response->successfulChange = false;
         header("Content-Type: application/json");

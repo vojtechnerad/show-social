@@ -109,7 +109,7 @@ if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $userId) {
 
 
 
-if (!$selectedUserData['public_profile'] AND !$isBefriended) {
+if (@!$selectedUserData['public_profile'] AND @!$isBefriended) {
     echo '<h3>Uživatel má soukromý profil.</h3>';
 } else {
     // Import komponenty statistik uživatele

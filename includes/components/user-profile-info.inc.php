@@ -55,12 +55,40 @@
 
         return $formattedString;
     }
+
+    $bingeMeterRating = $user->getBingeMeterRating();
+    $bingeMeterPercentage = $bingeMeterRating['bingeMeterRating'];
+    
+    if (!$bingeMeterPercentage) {
+        $bingeStatusColor = 'bg-secondary';
+        $bingeStatusText = 'zatím nemůže být hodnocen jako';
+        $bingeMeterRatingText = 'Uživatel zatím nemá žádný záznam.';
+    } else {
+        if ($bingeMeterPercentage < 33.3) {
+            $bingeStatusColor = 'bg-danger';
+            $bingeStatusText = 'je častý';
+        } else if ($bingeMeterPercentage < 66.6) {
+            $bingeStatusColor = 'bg-warning';
+            $bingeStatusText = 'je občasný';
+        } else {
+            $bingeStatusColor = 'bg-success';
+            $bingeStatusText = 'není';
+        }
+
+        $bingeMeterRatingText = 'Uživatel sledoval filmy a seriály v nastaveném limitu do ' . $bingeMeterRating['limit'] . ' minut celkem ' . $bingeMeterPercentage . '% (' . $bingeMeterRating['days_within_limit'] . ' z '. $bingeMeterRating['days_watching_total'] . ') dní.';
+    }
+
+    
 ?>
 <!-- Níže je template pro komponentu -->
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-2">
         <div class="col p-0">
-            <p class="fs-5 text-start"><i class="bi bi-calendar-event-fill"></i> uživatelem od <?php echo $profileCreatedAt ?></p>
+            <p class="fs-5 p-0 mb-1 text-start"><i class="bi bi-calendar-event-fill"></i> uživatelem od <?php echo $profileCreatedAt ?></p>
+            <p class="text-start mb-0 fs-6 <?php echo $bingeStatusColor ?> text-white" style="width: fit-content; padding: 8px; border-radius: 10px;">
+                Uživatel <?php echo $bingeStatusText?> binge watcher
+            </p>
+            <p class="text-muted"><?php echo $bingeMeterRatingText ?></p>
         </div>
         <div class="col p-0">
             <p class="fs-5 p-0 pb-1 m-0 text-start text-md-end">

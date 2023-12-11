@@ -145,6 +145,52 @@ class User extends Dbh {
         return $statement->fetchAll();
     }
 
+    function getTodaySeenEpisodes() {
+        $sql = '
+            SELECT tv_shows.id as show_id,
+            tv_shows.name as show_name,
+            tv_shows.original_name as original_name,
+            tv_shows.poster_path as poster_path,
+            tv_show_episodes.name as episode_name,
+            seen_episodes.timestamp as seen_time,
+            tv_show_episodes.season_number as season_number,
+            tv_show_episodes.episode_number as episode_number
+            FROM seen_episodes
+            LEFT JOIN tv_show_episodes
+            ON seen_episodes.id = tv_show_episodes.id
+            LEFT JOIN tv_shows
+            ON tv_show_episodes.show_id = tv_shows.id
+            WHERE seen_episodes.timestamp >= NOW() - INTERVAL 1 DAY AND user_id = (:user_id);
+            ORDER BY seen_time DESC;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetchAll();
+    }
+
+    function getTodaySeenMovies() {
+        $sql = '
+            SELECT seen_movies.user_id as user_id,
+            seen_movies.movie_id as movie_id,
+            seen_movies.timestamp as seen_time,
+            movies.title as title,
+            movies.original_title as original_title,
+            movies.poster_path as poster_path
+            FROM seen_movies
+            LEFT JOIN movies
+            ON seen_movies.movie_id = movies.movie_id
+            WHERE seen_movies.timestamp >= NOW() - INTERVAL 1 DAY AND user_id = (:user_id);
+            ORDER BY seen_time DESC;
+        ';
+        $statement = $this->connect()->prepare($sql);
+        $statement->execute([
+            ':user_id' => $this->id
+        ]);
+        return $statement->fetchAll();
+    }
+
     function getFriendShips() {
         $sql = '
             SELECT
@@ -813,5 +859,65 @@ class User extends Dbh {
         $watchStatistics = $watchStatisticsStatement->fetch();
 
         return ($watchStatistics['seenMoviesRuntimeSum']) ? $watchStatistics['seenMoviesRuntimeSum'] : 0 ;
+    }
+
+    function getBingeMeterRating() {
+        // Získání uživatelovo watch limitu
+        $limitStatement = $this->connect()->prepare('
+            SELECT watch_limit
+            FROM users
+            WHERE id = (:user_id)
+            LIMIT 1;
+        ');
+        $limitStatement->execute([
+            ':user_id' => $this->id
+        ]);
+        $watchLimit = $limitStatement->fetch()['watch_limit'];
+        
+        // Získání pole počtu minut strávených sledováním čehokoliv ve dnech, kdy uživatel něco sledoval
+        $statement = $this->connect()->prepare('
+            SELECT SUM(seen_time) as seen_time_total
+            FROM (
+                SELECT date(timestamp) as day, sum(movies.runtime) as seen_time
+                FROM `seen_movies`
+                LEFT JOIN `movies`
+                ON seen_movies.movie_id = movies.movie_id
+                WHERE user_id = (:user_id)
+                GROUP BY year(timestamp), month(timestamp), day(timestamp)
+                
+                UNION ALL
+                
+                SELECT date(timestamp) as day, sum(tv_show_episodes.runtime) as seen_time
+                FROM seen_episodes
+                LEFT JOIN tv_show_episodes
+                ON seen_episodes.id = tv_show_episodes.id
+                WHERE user_id = (:user_id)
+                GROUP BY year(timestamp), month(timestamp), day(timestamp)
+            ) as T
+            GROUP BY T.day
+        ');
+        $statement->execute([
+            'user_id' => $this->id
+        ]);
+        $results = $statement->fetchAll();
+
+        // Výpočty hodnot Binge Meter Ratingu
+        $days_within_limit = array_filter($results, function($seen_time_in_day) use($watchLimit) {
+            return $seen_time_in_day['seen_time_total'] <= $watchLimit;
+        });
+
+        if (count($results) === 0) {
+            $bingeMeterRating = false;
+        } else {
+            $bingeMeterRating = (round(count($days_within_limit) / count($results), 4)) * 100;
+        }
+
+        // Převod na objekt podstatných informací
+        return array(
+            "days_watching_total" => count($results),
+            "days_within_limit" => count($days_within_limit),
+            "limit" => $watchLimit,
+            "bingeMeterRating" => $bingeMeterRating
+        );
     }
 }

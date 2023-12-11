@@ -32,7 +32,7 @@ if ($isUserLogged) {
     echo '<h3>Příchozí žádosti o přátelství</h3>';
     echo '<div class="list-group">';
     if ($incomingFriendRequests) {
-        foreach ($incomingFriendRequests as $friendRequest) {
+        foreach ($incomingFriendRequests as $friendRequest) { // Výpis jednotlivých příchozích žádostí o přátelství
             if ($friendRequest['requesterId'] != $_SESSION['user_id']) {
                 $userId = $friendRequest['requesterId'];
                 $userFullName = $friendRequest['requester_full_name'];
@@ -42,6 +42,7 @@ if ($isUserLogged) {
                 $userFullName = $friendRequest['adressee_full_name'];
                 $userUserName = $friendRequest['adressee_user_name'];
             }
+            // Odkaz na profil
             echo '<a href="./user.php?id=' . $userId . '" class="list-group-item list-group-item-action">' . htmlspecialchars($userFullName) . ' (@' . htmlspecialchars($userUserName) . ')</a>';
         }
     } else {
@@ -60,6 +61,7 @@ echo '<div class="list-group">';
 if ($lastRegisteredUsers) {
     foreach ($lastRegisteredUsers as $user) {
         $createdAtDate = date_create($user['created_at']);
+        // Odkaz na profil
         echo '<a href="./user.php?id=' . $user['id'] . '" class="list-group-item list-group-item-action">' . htmlspecialchars($user['full_name']) . ' (@' . htmlspecialchars($user['user_name']) . ') ' . date_format($createdAtDate, 'd.m.Y H:i') . '</a>';
     }
 }
@@ -73,7 +75,7 @@ if ($isUserLogged) {
     echo '<div class="list-group">';
     $userFriendShips = $loggedUser->getFriendShips();
     if ($userFriendShips) {
-        foreach ($userFriendShips as $friendship) {
+        foreach ($userFriendShips as $friendship) { // Výpis jednotlivých přátel
             if ($friendship['requesterId'] != $_SESSION['user_id']) {
                 $userId = $friendship['requesterId'];
                 $userFullName = $friendship['requester_full_name'];
@@ -83,6 +85,7 @@ if ($isUserLogged) {
                 $userFullName = $friendship['adressee_full_name'];
                 $userUserName = $friendship['adressee_user_name'];
             }
+            // Odkaz na profil
             echo '<a href="./user.php?id=' . $userId . '" class="list-group-item list-group-item-action">';
             echo $userFullName;
             echo '</a>';
